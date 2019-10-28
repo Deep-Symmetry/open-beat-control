@@ -14,8 +14,9 @@ This project is intended for people who want to use the beat-link
 library to integrate with Pioneer DJ equipment, but are running in a
 non-JVM environment (like [PureData](https://puredata.info) or
 [Max](https://cycling74.com/products/max/)), or who need to run a
-lightweight non-graphical process on something like a Raspberry Pi,
-and thus are unable to take advantage of the features of [Beat Link
+lightweight headless process (that is, with no attached monitor,
+keyboard, and mouse for the GUI) on something like a Raspberry Pi, and
+thus are unable to take advantage of the features of [Beat Link
 Trigger](https://github.com/Deep-Symmetry/beat-link-trigger#beat-link-trigger).
 
 To begin with, only a few features will be supported, but over time
