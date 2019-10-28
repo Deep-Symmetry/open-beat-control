@@ -33,7 +33,7 @@ solve the problem of diverging features and stale code.
 
 Open Sound Control is a strange protocol, and makes some aspects of
 implementing an API awkward (there is no intrinsic support for
-requests with respnses), but it is widely supported in the kind of
+requests with responses), but it is widely supported in the kind of
 experimental music environments that are most likely to benefit from a
 project like this.
 
