@@ -5,6 +5,7 @@
   providing remote control via an OSC server."
   (:require [clojure.tools.cli :as cli]
             [open-beat-control.osc-server :as server]
+            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
             [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder
@@ -24,18 +25,6 @@
   this will be set to an appropriate set of appenders. Defaults to`,
   logging to stdout."}
   appenders (atom {:println (timbre/println-appender {:stream :auto})}))
-
-(def device-finder
-  "Holds the singleton instance of the Device Finder for convenience."
-  (DeviceFinder/getInstance))
-
-(def virtual-cdj
-  "Holds the singleton instance of the Virtual CDJ for convenience."
-  (VirtualCdj/getInstance))
-
-(def beat-finder
-  "Holds the singleton instance of the Beat Finder for convenience."
-  (BeatFinder/getInstance))
 
 (defn output-fn
   "Log format (fn [data]) -> string output fn.
@@ -201,14 +190,18 @@
      device-finder  ; And set up to respond when they arrive and leave.
      (reify DeviceAnnouncementListener
        (deviceFound [_ announcement]
+         (apply server/publish-to-stream "/devices" "/device/found"
+                (server/build-device-announcement-args announcement))
          (timbre/info "Pro DJ Link Device Found:" announcement)
          (future  ; We have seen a device, so we can start up the Virtual CDJ if it's not running.
            (if (.start virtual-cdj)
              (timbre/info "Virtual CDJ running as Player" (.getDeviceNumber virtual-cdj))
              (timbre/warn "Virtual CDJ failed to start."))))
        (deviceLost [_ announcement]
+         (apply server/publish-to-stream "/devices" "/device/lost"
+                (server/build-device-announcement-args announcement))
          (timbre/info "Pro DJ Link Device Lost:" announcement)
-         (when (empty? (.currentDevices device-finder))
+         (when (empty? (.getCurrentDevices device-finder))
            (timbre/info "Shutting down Virtual CDJ.")  ; We have lost the last device, so shut down for now.
            (.stop virtual-cdj)
            #_(carabiner/unlock-tempo)))))
