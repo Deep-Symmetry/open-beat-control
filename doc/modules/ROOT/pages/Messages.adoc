@@ -67,6 +67,20 @@ different port numbers to set them up.
 specify the same port number (or lack of one) as you used when setting
 up the stream.
 
+==== Examples
+
+* `/devices/list` (sends current devices to default response port)
+* `/devices/list 4000` (sends current devices to port 4000)
+* `/devices/stream` (sends current devices to default response port,
+  and any device changes that happen in the future will be sent there
+  as well)
+* `/devices/stream 4200` (sends current devices to port 4200, and any
+  device changes that happen in the future will be sent there as well)
+* `/devices/stop` (stops sending device changes to the default
+  response port)
+* `/devices/stop 4200` (stops sending device changes to port 4200)
+
+
 === Responses
 
 `/device/found`:: Sent for each device that is on the network (and,
@@ -76,6 +90,11 @@ device (player) number, its name, and its IP address.
 `/device/lost`:: Sent for streams whenever a device has disappeared
 from the network. The arguments are the device (player) number, its
 name, and its IP address.
+
+==== Examples
+
+* `/device/found 2 CDJ-2000 172.30.20.5`
+* `/device/lost 33 DJM-2000 172.30.20.4`
 
 [[log]]
 == /log
@@ -119,6 +138,11 @@ removes any response port setting that you had previously established,
 so Open Beat Control will revert to its default behavior of sending
 responses to a port that is numbered one higher than the port from
 which incoming messages are being received.
+
+==== Examples
+
+* `/respond 5000`
+* `/respond`
 
 === Responses
 
