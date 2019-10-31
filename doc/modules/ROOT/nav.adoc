@@ -1,2 +1,3 @@
 * xref:README.adoc[Startup]
 * xref:Communicating.adoc[Communicating]
+* xref:Messages.adoc[Messages]

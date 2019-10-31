@@ -29,6 +29,7 @@ Because every OSC environment is slightly different, the most
 important first task is to set things up so that not only can you send
 messages to Open Beat Control, but it can send information back to you.
 
+[[sending]]
 == Sending OSC to Open Beat Control
 
 To send messages to Open Beat Control, you will need to configure your
@@ -49,6 +50,7 @@ file.
 But how does Open Beat Control know how to send information back to
 you?
 
+[[response-port]]
 == Configuring the OSC Response Port
 
 Some OSC software automatically listens for responses on the port
@@ -86,7 +88,7 @@ address configured.
 
 ****
 
-* Continue to <<{guide-top}#what-next,What Next?>>
+* Continue to <<Messages#messages,Messages?>>
 * Return to <<{guide-top}#open-beat-control-user-guide,Top>>
 
 ****
