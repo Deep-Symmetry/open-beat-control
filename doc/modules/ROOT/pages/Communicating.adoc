@@ -1,0 +1,94 @@
+= Communicating
+James Elliott <james@deepsymmetry.org>
+:icons: font
+:toc:
+:experimental:
+:toc-placement: preamble
+:toclevels: 3
+:guide-top: README
+
+// Set up support for relative links on GitHub, and give it
+// usable icons for admonitions, w00t! Add more conditions
+// if you need to support other environments and extensions.
+ifdef::env-github[]
+:outfilesuffix: .adoc
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::env-github[]
+
+// Render section header anchors in a GitHub-compatible way.
+ifndef::env-github[]
+:idprefix:
+:idseparator: -
+endif::env-github[]
+
+Because every OSC environment is slightly different, the most
+important first task is to set things up so that not only can you send
+messages to Open Beat Control, but it can send information back to you.
+
+== Sending OSC to Open Beat Control
+
+To send messages to Open Beat Control, you will need to configure your
+OSC sending system to know the host that it is running on (this will
+generally be the same as the host that your other software is running
+on, so you can use the very fast `localhost` address), and the port
+number on which Open Beat Control's OSC server is listening. Unless
+you changed it using the `-o` or `--osc-port` command-line argument,
+that will be `17002`.
+
+So in its default mode of operation, you would configure a Max/MSP
+`udpsend` object running on the same machine to send to Open Beat
+Control as: `udpsend localhost 17002`. You can test your configuration
+by telling it to send a `/log` message, which causes OBC to
+immediately log the message and any arguments to the console or log
+file.
+
+But how does Open Beat Control know how to send information back to
+you?
+
+== Configuring the OSC Response Port
+
+Some OSC software automatically listens for responses on the port
+whose number is one higher than the port of the socket it is using to
+send messages. If that is the case for your software, you don't need
+to do anything, because Open Beat Control will default to sending
+responses to that port.
+
+But most software (including Max/MSP) does not work that way. In fact,
+there is no easy way in Max/MSP to even find out what port number the
+`udpsend` object is using to send its messages. It will be a different
+port each time you open the patch, and if you have more than one
+`udpsend` object in your patch, each will be using a different,
+unpredictable port number. Instead, you pick a fixed port number for
+your `udpreceive` object to listen on. For example, you might choose
+`udpreceive 17004`. Now you just need to tell Open Beat Control that
+it should reach you on that port.
+
+To do that, use your `udpsend` object to send the OSC message
+`/respond 17004` (or whatever port number you actually used). That
+will configure Open Beat Control to respond to any message from that
+`udpsend` object to the port number you chose in the message.
+
+TIP: Using a `loadbang` object to automatically send this message when
+you open your patch will automatically tell Open Beat Control that
+whatever port number Max/MSP gave your `udpsend` object should be
+responded to on the port that you need it to. But if you started Open
+Beat Control after your patch was already open, or quit it and restart
+it, you will need to send the message again. Also, if you are using
+more than one `udpsend` object to communicate with Open Beat Control,
+even from the same patch, each one will need to have its `/respond`
+address configured.
+
+== Learning More
+
+****
+
+* Continue to <<{guide-top}#what-next,What Next?>>
+* Return to <<{guide-top}#open-beat-control-user-guide,Top>>
+
+****
+
+include::partial$Footer.adoc[]

@@ -1,0 +1,115 @@
+= Open Beat Control User Guide
+James Elliott <james@deepsymmetry.org>
+:icons: font
+:experimental:
+
+// Set up support for relative links on GitHub, and give it
+// usable icons for admonitions, w00t! Add more conditions
+// if you need to support other environments and extensions.
+ifdef::env-github[]
+:outfilesuffix: .adoc
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::env-github[]
+
+// Render section header anchors in a GitHub-compatible way.
+ifndef::env-github[]
+:idprefix:
+:idseparator: -
+endif::env-github[]
+
+This is an introduction to the Open Beat Control utility, describing
+the OSC messages you can use to interact with it. This guide shows
+some ways you can use it, but as an open-ended environment, the
+possibilities are endless. If you have questions or other approaches
+you’d like to share, please post to the
+https://gitter.im/brunchboy/beat-link-trigger[Beat Link Trigger Gitter
+chat room].
+
+To keep page sizes manageable, this guide is split into several pages.
+It is worth reading through this whole guide once if you are new to
+Open Beat Control. Once you know what you are looking for, you can
+also dive right into it by jumping to the page you want using the
+navigation menu on the left.
+
+[[startup]]
+== Startup
+
+When you launch Open Beat Control, it does not display any visible
+user interface, it simply logs out informational messages to the
+console (or to the log file you have specified in the command-line
+arguments you provided). This is because, unlike the rich GUI of
+https://github.com/Deep-Symmetry/beat-link-trigger[Beat Link Trigger],
+this project is intended to be used on less-powerful computers which
+often lack displays completely. The log can be viewed to troubleshoot
+issues when things are not working the way you expect, but your
+general interaction with the program will be by sending and receiving
+OSC messages.
+
+== Learning More
+
+****
+
+* Continue to <<Communicating#communicating,Communicating>>
+
+****
+
+[[what-next]]
+== What Next?
+
+Hopefully this guide has been enough to get you started, and thinking
+about interesting ways you can synchronize your CDJs with other
+elements of your show. (If you have not yet read the other pages in
+the guide, please do so, either using the “Learning More” links in
+each page—like the one right above—or by exploring the navigation menu
+on the left.)
+
+If you have any thoughts, questions, your own integration examples, or
+even crazy ideas, please share them in the
+https://gitter.im/brunchboy/beat-link-trigger[Beat Link Trigger Gitter
+chat]!
+
+If you find what seems to be an actual problem with the software,
+please open an
+https://github.com/Deep-Symmetry/open-beat-control/issues[Issue], or
+at least check whether someone else already has.
+
+Thanks for reading this, and have fun with Open Beat Control! I hope
+to hear from you.
+
+=== Funding
+
+Open Beat Control is, and will remain, completely free and
+open-source. If it has helped you, taught you something, or pleased
+you, let us know and share some of your discoveries and code as
+described above. If you’d like to financially support its ongoing
+development, you are welcome (but by no means obligated) to donate
+towards the hundreds of hours of research, development, and writing
+that have already been invested. Or perhaps to facilitate future
+efforts, tools, toys, and time to explore.
+
++++
+<a href="https://liberapay.com/deep-symmetry/donate"><img align="center" alt="Donate using Liberapay"
+    src="https://liberapay.com/assets/widgets/donate.svg"></a> using Liberapay, or
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J26G6ULJKV8RL"><img align="center"
+    alt="Donate" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"></a> using PayPal
++++
+
+include::partial$Footer.adoc[]
+
+
+== Library Licenses
+
+=== https://sourceforge.net/projects/remotetea/[Remote Tea]
+
+Used for communicating with the NFSv2 servers on players, licensed
+under the https://opensource.org/licenses/LGPL-2.0[GNU Library General
+Public License, version 2].
+
+=== The http://kaitai.io[Kaitai Struct] Java runtime
+
+Used for parsing rekordbox exports and media analysis files, licensed
+under the https://opensource.org/licenses/MIT[MIT License].

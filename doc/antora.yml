@@ -1,0 +1,7 @@
+name: open-beat-control
+title: Open Beat Control
+version: 'master'
+prerelease: true
+start_page: ROOT:README.adoc
+nav:
+- modules/ROOT/nav.adoc

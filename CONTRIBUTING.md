@@ -23,19 +23,8 @@ the mechanism you used to install them did not automatically include
 one, I recommend installing a current version of the
 [OpenJDK](http://openjdk.java.net).
 
-> You also need to have [Antora](https://antora.org) installed because
-> it is used to build the embedded copy of the User Guide when
-> building and running from source. If you are impatient to get
-> started without doing that, you can temporarily comment out the
-> section of `project.clj` that does this. Add a semicolon to the
-> `:prep-tasks` line so that it looks like this:
->
->  `  :prep-tasks [ ; ["shell" "antora" "doc/embedded.yml"]`
->
-> But keep in mind that if you do this, the built-in user guide will
-> not work, and you will not be able to create a release-worthy build
-> until you install Antora and restore the line to its un-commented
-> state.
+> If you want to be able to preview changes to the User Guide, you
+> also need to have [Antora](https://antora.org) installed.
 
 Once you have those in place, you can run OBC from source by opening a
 terminal window inside your clone of the project, and typing `lein
