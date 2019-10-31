@@ -66,13 +66,19 @@ standard system logs directory, something like:
 Other options allow you to specify the port number on which its OSC
 server listens, and there will be more to come.
 
-## Options
+### Options
 
     -o, --osc-port PORT        17002  Port number of OSC server
     -L, --log-file PATH               Log to a rotated file instead of stdout
     -h, --help                        Display help information and exit
 
-### Funding
+## User Guide
+
+To learn how to communicate with Open Beat Control, and the OSC
+messages you can send and receive, please see the
+[User Guide](https://obc-guide.deepsymmetry.org/).
+
+## Funding
 
 Open Beat Control is, and will remain, completely free and
 open-source. If it has helped you, taught you something, or pleased
