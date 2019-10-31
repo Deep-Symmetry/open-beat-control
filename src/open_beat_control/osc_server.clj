@@ -212,6 +212,9 @@
       "stop"
       (stop-stream msg port)
 
+      nil
+      (respond-with-error msg (str (:path msg) " requires a command."))
+
       (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
 
 (defn- update-osc-client
