@@ -101,7 +101,7 @@ _None_
 == /respond
 
 As described in the <<Communicating#response-port,Communicating>>
-section, the `/response` message tells Open Beat Control the port
+section, the `/respond` message tells Open Beat Control the port
 number it should use to send OSC responses back to your own software.
 
 === Arguments
@@ -114,7 +114,7 @@ number it should use to send OSC responses back to your own software.
 
 |=======================================================================
 
-If you do not supply an argument to the `/response` command, it
+If you do not supply an argument to the `/respond` command, it
 removes any response port setting that you had previously established,
 so Open Beat Control will revert to its default behavior of sending
 responses to a port that is numbered one higher than the port from
