@@ -69,16 +69,16 @@ up the stream.
 
 ==== Examples
 
-* `/devices/list` (sends current devices to default response port)
-* `/devices/list 4000` (sends current devices to port 4000)
-* `/devices/stream` (sends current devices to default response port,
+* `/devices list` (sends current devices to default response port)
+* `/devices list 4000` (sends current devices to port 4000)
+* `/devices stream` (sends current devices to default response port,
   and any device changes that happen in the future will be sent there
   as well)
-* `/devices/stream 4200` (sends current devices to port 4200, and any
+* `/devices stream 4200` (sends current devices to port 4200, and any
   device changes that happen in the future will be sent there as well)
-* `/devices/stop` (stops sending device changes to the default
+* `/devices stop` (stops sending device changes to the default
   response port)
-* `/devices/stop 4200` (stops sending device changes to port 4200)
+* `/devices stop 4200` (stops sending device changes to port 4200)
 
 
 === Responses
