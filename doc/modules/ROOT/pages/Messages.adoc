@@ -34,10 +34,7 @@ Control, and the responses (if any) that they will produce.
 Find out what Pro DJ Link devices are visible on the network, either
 now or (by setting up a stream) as they come and go.
 
-=== Arguments
-
-=== Arguments
-
+.Arguments
 [cols="1,1,1,4",options="header",]
 |=======================================================================
 
@@ -53,8 +50,7 @@ the first argument. The port number to which the response is sent will
 be the default response port unless you supply a second argument, in
 which case the response will be sent to that port.
 
-### Commands
-
+.Commands
 `list`:: Sends responses describing all devices currently on the
 network.
 
@@ -68,8 +64,7 @@ different port numbers to set them up.
 specify the same port number (or lack of one) as you used when setting
 up the stream.
 
-=== Responses
-
+.Responses
 `/device/found`:: Sent for each device that is on the network (and,
 for streams, for each new device that appears). The arguments are the
 device (player) number, its name, and its IP address.
@@ -85,8 +80,7 @@ As described in the <<Communicating#sending,Communicating>> section,
 the `/log` message tells Open Beat Control to output the message to
 the log file, or if no log file has been configured, to the console.
 
-=== Arguments
-
+.Arguments
 _Anything at all_
 
 Upon receipt of this message, Open Beat Control will log all the
@@ -94,19 +88,17 @@ details it knows about the message it received, including the types
 and values of the arguments, and the host and port from which it was
 received, to the console or log file.
 
-=== Responses
-
+.Responses
 _None_
 
-[[response]]
-== /response
+[[respond]]
+== /respond
 
 As described in the <<Communicating#response-port,Communicating>>
 section, the `/response` message tells Open Beat Control the port
 number it should use to send OSC responses back to your own software.
 
-=== Arguments
-
+.Arguments
 [cols="1,1,1,4",options="header",]
 |=======================================================================
 
@@ -121,8 +113,7 @@ so Open Beat Control will revert to its default behavior of sending
 responses to a port that is numbered one higher than the port from
 which incoming messages are being received.
 
-=== Responses
-
+.Responses
 _None_
 
 == Learning More

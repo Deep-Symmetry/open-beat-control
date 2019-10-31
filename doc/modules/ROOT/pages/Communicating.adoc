@@ -88,7 +88,7 @@ address configured.
 
 ****
 
-* Continue to <<Messages#messages,Messages?>>
+* Continue to <<Messages#messages,Messages>>
 * Return to <<{guide-top}#open-beat-control-user-guide,Top>>
 
 ****
