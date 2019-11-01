@@ -37,13 +37,13 @@ now or (by setting up a stream) as they come and go.
 
 === Arguments
 
-[cols="1,1,1,4",options="header",]
+[cols="1m,1m,1,4",options="header",]
 |=======================================================================
 
 |Name |Type |Default |Purpose
-|`command` |`string` |_n/a_ |The action you want to take, see below.
+|command |string |_n/a_ |The action you want to take, see below.
 
-|`port` |`integer` |The response port |If you want responses to go to a different port than normal, you can supply that port number here.
+|port |integer |The response port |If you want responses to go to a different port than normal, you can supply that port number here.
 
 |=======================================================================
 
@@ -115,6 +115,62 @@ received, to the console or log file.
 === Responses
 
 _None_
+
+[[logging]]
+== /logging
+
+Tells Open Beat Control to forward any log messages via OSC as well as
+writing them to its log file. This can be convenient if you are
+running OBC on another machine, and can more conveniently log the
+information from this one.
+
+=== Arguments
+
+[cols="1m,1m,1,4",options="header",]
+|=======================================================================
+
+|Name |Type |Default |Purpose
+|command |string |_n/a_ |The action you want to take, see below.
+
+|port |integer |The response port |If you want responses to go to a different port than normal, you can supply that port number here.
+
+|=======================================================================
+
+The command you send as the first argument determines whether log
+forwarding is turned on or off. The port number to which the log
+messages are sent will be the default response port unless you supply
+a second argument, in which case they will be sent to that port.
+
+==== Commands
+
+`stream`:: Tells Open Beat Control to send any future log messages as
+OSC messages, to the specified port if you supply one, or to the
+default response port. You can have more than one stream running at
+the same time if you use different port numbers to set them up.
+
+`stop`:: Stops sending log messages over OSC. You must specify the
+same port number (or lack of one) as you used when setting up the
+stream.
+
+==== Examples
+
+* `/logging stream` (future log messages will be sent to the default
+  response port)
+* `/logging stream 1492` (future log messages will be sent port 1492)
+* `/logging stop` (stops sending log messages to the default response
+  port)
+* `/logging stop 1492` (stops sending log messages to port 1492)
+
+
+=== Responses
+
+`/log`:: Sent for each entry made to the Open Beat Control log file
+while the stream is active.
+
+==== Examples
+
+* `received: /log 2019-Oct-31 23:50:42 INFO [open-beat-control.core:222] - Virtual CDJ running as Player 5`
+
 
 [[respond]]
 == /respond

@@ -232,9 +232,8 @@
   Usage:
     /respond port  (set response port for similar messages)
     /respond       (unset response port for similar messages)"
-  [msg]
-  (let [{:keys [src-host src-port args]} msg
-        port                             (first args)]
+  [{:keys [src-host src-port args] :as msg}]
+  (let [port (first args)]
     (if (some? port)  ; We were given a port value
       (if (and (int? port)
                (< 0 port 65536))
@@ -253,6 +252,30 @@
   [msg]
   (timbre/info "Received /log message:" msg))
 
+(defn- logging-handler
+  "Handler for the /logging command, which asks for any future OBC log
+  file entries to be also sent as a /log response to this message.
+
+  Usage:
+    /logging stream port?  (streams log file entries until stopped)
+    /logging stop port?    (stops streaming log events)
+
+  If `port` is omitted, the default response port is used."
+  [{:keys [args] :as msg}]
+  (let [[command port] args]
+    (case command
+
+      "stream"
+      (start-stream msg port)
+
+      "stop"
+      (stop-stream msg port)
+
+      nil
+      (respond-with-error msg (str (:path msg) " requires a command."))
+
+      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -262,6 +285,7 @@
                   (osc/osc-server port "Open Beat Control OSC")))
   (osc/osc-handle @server "/respond" respond-handler)
   (osc/osc-handle @server "/log" log-handler)
+  (osc/osc-handle @server "/logging" logging-handler)
   (osc/osc-handle @server "/devices" devices-handler))
 
 (defn publish-to-stream

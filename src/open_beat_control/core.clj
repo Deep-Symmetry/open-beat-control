@@ -12,19 +12,34 @@
                                       VirtualCdj MasterListener DeviceUpdateListener])
   (:gen-class))
 
+(def ^:private osc-appender
+  "A timbre appender which sends the log as OSC /log messages to any
+  clients that have subscribed to the logging stream."
+  {:enabled?   true
+   :async?     false
+   :min-level  :info
+   :rate-limit nil
+   :output-fn  :inherit
+   :fn         (fn [data]
+                 (let [{:keys [output_]} data
+                       formatted-output  (force output_)]
+                   (server/publish-to-stream "/logging" "/log" formatted-output)))})
+
 (defn- create-appenders
   "Create a set of appenders which rotate the log file at the
-  specified path."
+  specified path as well as sending to registered OSC clients."
   [path]
-  {:rotor (rotor/rotor-appender {:path path
+  {:rotor (rotor/rotor-appender {:path     path
                                  :max-size 100000
-                                 :backlog 5})})
+                                 :backlog  5})
+   :osc   osc-appender})
 
 (defonce ^{:private true
            :doc "If the user has requested logging to a log directory,
   this will be set to an appropriate set of appenders. Defaults to`,
-  logging to stdout."}
-  appenders (atom {:println (timbre/println-appender {:stream :auto})}))
+  logging to stdout and registered OSC clients."}
+  appenders (atom {:println (timbre/println-appender {:stream :auto})
+                   :osc     osc-appender}))
 
 (defn output-fn
   "Log format (fn [data]) -> string output fn.
@@ -184,9 +199,13 @@
     (server/open-server (:osc-port options))
     (timbre/info "Running OSC server on port" (:osc-port options))
 
+    ;; See if the user wants us to use a real player number.
     (when (:real-player options)
       (.setUseStandardPlayerNumber virtual-cdj true)
       (timbre/info "Virtual CDJ will attempt to pose as a standard player, device #1 through #4"))
+
+    ;; Set our device name.
+    (.setDeviceName virtual-cdj "open-beat-control")
 
     ;; Start the daemons that do everything!
     (timbre/info "Waiting for Pro DJ Link devices...")
