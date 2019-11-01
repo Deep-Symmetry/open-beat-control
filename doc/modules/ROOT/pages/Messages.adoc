@@ -37,7 +37,7 @@ now or (by setting up a stream) as they come and go.
 
 === Arguments
 
-[cols="1m,1m,1,4",options="header",]
+[cols="1m,1m,2,5",options="header",]
 |=======================================================================
 
 |Name |Type |Default |Purpose
@@ -126,7 +126,7 @@ information from this one.
 
 === Arguments
 
-[cols="1m,1m,1,4",options="header",]
+[cols="1m,1m,2,5",options="header",]
 |=======================================================================
 
 |Name |Type |Default |Purpose
@@ -169,7 +169,7 @@ while the stream is active.
 
 ==== Examples
 
-* `received: /log 2019-Oct-31 23:50:42 INFO [open-beat-control.core:222] - Virtual CDJ running as Player 5`
+* `/log 2019-Oct-31 23:50:42 INFO [open-beat-control.core:222] - Virtual CDJ running as Player 5`
 
 
 [[respond]]
@@ -197,8 +197,8 @@ which incoming messages are being received.
 
 ==== Examples
 
-* `/respond 5000`
-* `/respond`
+* `/respond 5000` (responses will be sent to port 5000)
+* `/respond`  (responses will be sent to the default port)
 
 === Responses
 
