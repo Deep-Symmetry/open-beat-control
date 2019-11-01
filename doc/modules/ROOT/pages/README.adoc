@@ -49,6 +49,11 @@ issues when things are not working the way you expect, but your
 general interaction with the program will be by sending and receiving
 OSC messages.
 
+Details of how to start and configure Open Beat Control can be found
+on the
+https://github.com/Deep-Symmetry/open-beat-control#usage[project
+page].
+
 == Learning More
 
 ****
