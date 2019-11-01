@@ -72,9 +72,10 @@ server listens, and there will be more to come.
 
 ### Options
 
-    -o, --osc-port PORT        17002  Port number of OSC server
-    -L, --log-file PATH               Log to a rotated file instead of stdout
-    -h, --help                        Display help information and exit
+    -o, --osc-port PORT  17002  Port number of OSC server
+    -r, --real-player           Try to pose as a real CDJ (device #1-4)
+    -L, --log-file PATH         Log to a rotated file instead of stdout
+    -h, --help                  Display help information and exit
 
 ## User Guide
 

@@ -132,6 +132,7 @@
     :default 17002
     :parse-fn #(Long/parseLong %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
+   ["-r" "--real-player" "Try to pose as a real CDJ (device #1-4)"]
    ["-L" "--log-file PATH" "Log to a rotated file instead of stdout"
     :validate [valid-log-file? @log-file-error]]
    ["-h" "--help" "Display help information and exit"]])
@@ -182,6 +183,10 @@
 
     (server/open-server (:osc-port options))
     (timbre/info "Running OSC server on port" (:osc-port options))
+
+    (when (:real-player options)
+      (.setUseStandardPlayerNumber virtual-cdj true)
+      (timbre/info "Virtual CDJ will attempt to pose as a standard player, device #1 through #4"))
 
     ;; Start the daemons that do everything!
     (timbre/info "Waiting for Pro DJ Link devices...")
