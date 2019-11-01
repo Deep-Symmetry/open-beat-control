@@ -1,3 +1,7 @@
 * xref:README.adoc[Startup]
 * xref:Communicating.adoc[Communicating]
 * xref:Messages.adoc[Messages]
+** xref:Messages.adoc#devices[`/devices`]
+** xref:Messages.adoc#log[`/log`]
+** xref:Messages.adoc#logging[`/logging`]
+** xref:Messages.adoc#respond[`/respond`]
