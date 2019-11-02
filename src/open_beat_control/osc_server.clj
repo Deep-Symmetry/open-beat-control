@@ -276,6 +276,30 @@
 
       (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
 
+(defn- beats-handler
+  "Handler for the /beats command, which configures the reporting of
+  beat packets seen on the network as /beat responses.
+
+  Usage:
+    /beats stream port? (streams beats until stopped)
+    /beats stop port? (stops streaming beats)
+
+  If `port` is omitted, the default response port is used."
+  [{:keys [args] :as msg}]
+  (let [[command port] args]
+    (case command
+
+      "stream"
+      (start-stream msg port)
+
+      "stop"
+      (stop-stream msg port)
+
+      nil
+      (respond-with-error msg (str (:path msg) " requires a command."))
+
+      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -286,7 +310,8 @@
   (osc/osc-handle @server "/respond" respond-handler)
   (osc/osc-handle @server "/log" log-handler)
   (osc/osc-handle @server "/logging" logging-handler)
-  (osc/osc-handle @server "/devices" devices-handler))
+  (osc/osc-handle @server "/devices" devices-handler)
+  (osc/osc-handle @server "/beats" beats-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

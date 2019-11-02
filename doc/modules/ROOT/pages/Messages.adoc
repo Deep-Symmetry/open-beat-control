@@ -26,6 +26,77 @@ This page lists the OSC messages that you can send to Open Beat
 Control, and the responses (if any) that they will produce. Each
 message is identified by its OSC path.
 
+[[beats]]
+== /beats
+
+Tells Open Beat Control to report any Beat messages that are seen on
+the DJ Link network. This allows you to align performances at the beat
+and bar level.
+
+=== Arguments
+
+[cols="1m,1m,2,5",options="header",]
+|=======================================================================
+
+|Name |Type |Default |Purpose
+|command |string |_n/a_ |The action you want to take, see below.
+
+|port |integer |The response port |If you want responses to go to a different port than normal, you can supply that port number here.
+
+|=======================================================================
+
+The command you send as the first argument determines whether beat
+reporting is turned on or off. The port number to which the beat
+messages are sent will be the default response port unless you supply
+a second argument, in which case they will be sent to that port.
+
+==== Commands
+
+`stream`:: Tells Open Beat Control to report beat packets as OSC
+`/beat` messages, to the specified port if you supply one, or to the
+default response port. You can have more than one stream running at
+the same time if you use different port numbers to set them up.
+
+`stop`:: Stops reporting beat packets over OSC. You must specify the
+same port number (or lack of one) as you used when setting up the
+stream.
+
+==== Examples
+
+* `/beats stream` (Beat packets will be reported on the default
+  response port)
+* `/beats stream 2000` (Beat packets will be reported on port 2000)
+* `/beats stop` (stops reporting Beat packets on the default response
+  port)
+* `/logging stop 2000` (stops reporting Beat packets on port 2000)
+
+
+=== Responses
+
+`/beat`:: Sent for each Beat packet seen while the stream is active. Each `/beat` message has five arguments:
+
+==== `/beat` Arguments
+
+[cols="2m,1m,6",options="header",]
+|=======================================================================
+|Name |Type |Meaning
+|device |int |The player number that send the beat. Mixers use number 33.
+|beat |int |Position within measure, 1--4. Not meaningful from mixers.
+|tempo |float |Beats per minute being played.
+|track-tempo |float |Beats per minute of track at normal speed.
+|pitch |float |Speed at which track is being played, 1.0 means normal, 0.5 means half speed, etc.
+|=======================================================================
+
+==== Examples
+
+* `/beat 2 4 131.603973 132. 0.997`
+
+Here, player 2 just started playing the final (fourth) beat of a bar,
+at 131.6 BPM. The natural track tempo at this point is 132 BPM, and it
+is playing at 99.7% normal speed.
+
+
+
 [[devices]]
 == /devices
 
@@ -153,7 +224,8 @@ stream.
 
 * `/logging stream` (future log messages will be sent to the default
   response port)
-* `/logging stream 1492` (future log messages will be sent port 1492)
+* `/logging stream 1492` (future log messages will be sent to port
+  1492)
 * `/logging stop` (stops sending log messages to the default response
   port)
 * `/logging stop 1492` (stops sending log messages to port 1492)

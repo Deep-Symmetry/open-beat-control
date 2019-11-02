@@ -8,8 +8,8 @@
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
             [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
             [taoensso.timbre :as timbre])
-  (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder
-                                      VirtualCdj MasterListener DeviceUpdateListener])
+  (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
+                                      VirtualCdj MasterListener DeviceUpdateListener Util])
   (:gen-class))
 
 (def ^:private osc-appender
@@ -209,12 +209,14 @@
 
     ;; Start the daemons that do everything!
     (timbre/info "Waiting for Pro DJ Link devices...")
-    (.start device-finder)  ; Start watching for any Pro DJ Link devices.
-    (.addDeviceAnnouncementListener
-     device-finder  ; And set up to respond when they arrive and leave.
+
+    ;; Start watching for any Pro DJ Link devices.
+    (.start device-finder)
+    (.addDeviceAnnouncementListener  ; And set up to respond when they arrive and leave.
+     device-finder
      (reify DeviceAnnouncementListener
        (deviceFound [_ announcement]
-         (apply server/publish-to-stream "/devices" "/device/found"
+         (apply server/publish-to-stream "/devices" "/device/found"  ; Report the device to OSC subsribers.
                 (server/build-device-announcement-args announcement))
          (timbre/info "Pro DJ Link Device Found:" announcement)
          (future  ; We have seen a device, so we can start up the Virtual CDJ if it's not running.
@@ -230,6 +232,14 @@
            (.stop virtual-cdj)
            #_(carabiner/unlock-tempo)))))
 
-    (.start beat-finder)  ; Also start watching for beats, so the beat-alignment handler will get called.
+    ;; Also start watching for beat packets.
+    (.start beat-finder)
+    (.addBeatListener  ; And set up to respond to them.
+     beat-finder
+     (reify BeatListener
+       (newBeat [_ beat]
+         (server/publish-to-stream "/beats" "/beat" (.getDeviceNumber beat) (.getBeatWithinBar beat)
+                                   (float (.getEffectiveTempo beat)) (float (/ (.getBpm beat) 100.0))
+                                   (float (Util/pitchToMultiplier (.getPitch beat)))))))
 
 ))
