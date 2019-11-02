@@ -4,6 +4,7 @@ pom.xml.asc
 *.class
 /lib/
 /classes/
+/resources/open_beat_control/version.edn
 /target/
 /checkouts/
 .lein-deps-sum

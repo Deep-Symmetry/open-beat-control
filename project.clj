@@ -32,7 +32,8 @@
 
   ;; Perform the task which sets up the resource allowing runtime
   ;; access to the build version information.
-  :prep-tasks [["v" "cache" "resources/open_beat_control" "edn"]]
+  :prep-tasks ["compile"
+               ["v" "cache" "resources/open_beat_control" "edn"]]
 
   ;; Miscellaneous sanitary settings
   :pedantic :warn
