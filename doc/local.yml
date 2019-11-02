@@ -1,0 +1,13 @@
+site:
+  title: Open Beat Control User Guide
+  url: https://obc-guide.deepsymmetry.org/
+  start_page: open-beat-control::README.adoc
+content:
+  sources:
+  - url: ../open-beat-control
+    branches: [master, guide-*]
+    start_path: doc
+ui:
+  bundle:
+    url: https://deepsymmetry.org/media/antora/ui-bundle.zip
+    snapshot: true

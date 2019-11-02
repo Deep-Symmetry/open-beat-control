@@ -4,6 +4,7 @@ pom.xml.asc
 *.class
 /lib/
 /classes/
+/doc/build/
 /resources/open_beat_control/version.edn
 /target/
 /checkouts/
