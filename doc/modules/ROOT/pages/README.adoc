@@ -81,7 +81,9 @@ tell Java that this is a background-only application with no user
 interface by adding `-Dapple.awt.UIElement=true` before the `-jar`
 section of the `java` invocation:
 
-> java -Dapple.awt.UIElement=true -jar open-beat-control.jar
+----
+java -Dapple.awt.UIElement=true -jar open-beat-control.jar
+----
 ====
 
 There are other command-line options you can use as well.
