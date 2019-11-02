@@ -13,7 +13,7 @@
 
   :profiles {:dev     {:repl-options {:init-ns open-beat-control.core
                                       :welcome (println "open-beat-control loaded.")}
-                       :jvm-opts     ["-XX:-OmitStackTraceInFastThrow"]}
+                       :jvm-opts     ["-XX:-OmitStackTraceInFastThrow" "-Dapple.awt.UIElement=true"]}
              :uberjar {:aot :all}}
 
   :main ^:skip-aot open-beat-control.core

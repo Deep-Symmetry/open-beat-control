@@ -73,6 +73,17 @@ log file in your standard system logs directory, along these lines:
 java -jar open-beat-control.jar -L /var/log/open-beat-control.log
 ----
 
+[TIP]
+====
+If you are running on a Mac, and want to avoid having a useless "java"
+dock icon appear, with a menubar that has no helpful content, you can
+tell Java that this is a background-only application with no user
+interface by adding `-Dapple.awt.UIElement=true` before the `-jar`
+section of the `java` invocation:
+
+> java -Dapple.awt.UIElement=true -jar open-beat-control.jar
+====
+
 There are other command-line options you can use as well.
 
 [[options]]

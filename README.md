@@ -89,7 +89,7 @@ server listens, and there will be more to come.
     -h, --help                  Display help information and exit
 
 For more information about these, please see the [User
-Guide](https://obc-guide.deepsymmetry.org/README#options)
+Guide](https://obc-guide.deepsymmetry.org/open-beat-control/readme#startup)
 
 ## User Guide
 
