@@ -48,16 +48,24 @@ page on your target hardware.
 > [download](https://deepsymmetry.org/media/open-beat-control.jar) a
 > development build.
 
+### Java Runtime
+
 You may be able to get by with Java 6, but a current release will
 perform better and have more recent security updates. We currently use
 [Amazon Corretto
 11](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
 which is a free OpenJDK 11 distribution with long-term support.
 
-You can either start open-beat-control manually when you want to use
-it, or configure it to start when your system boots.
+If you are using Open Beat Control on a Raspberry Pi, we have not yet
+started testing this (and very much would like to hear reports from
+people who have), but it looks like [Raspbian
+Buster](https://www.raspberrypi.org/downloads/raspbian/) includes
+OpenJDK 11 as well, so it should be a great starting point.
 
 ## Usage
+
+You can either start open-beat-control manually when you want to use
+it, or configure it to start when your system boots.
 
 To start open-beat-control manually, run:
 
