@@ -49,23 +49,26 @@ page on your target hardware.
 > development build.
 
 You may be able to get by with Java 6, but a current release will
-perform better and have more recent security updates.
+perform better and have more recent security updates. We currently use
+[Amazon Corretto
+11](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
+which is a free OpenJDK 11 distribution with long-term support.
 
-You can either open-beat-control manually when you want to use it, or
-configure it to start when your system boots.
+You can either start open-beat-control manually when you want to use
+it, or configure it to start when your system boots.
 
 ## Usage
 
 To start open-beat-control manually, run:
 
-    $ java -jar open-beat-control.jar
+    java -jar open-beat-control.jar
 
 It will log to the terminal window in which you are running it. If you
 instead want to run it at system startup, you will probably also want
 to set a log-file path, so it logs to a rotated log file in your
 standard system logs directory, something like:
 
-    $ java -jar open-beat-control.jar -L /var/log/open-beat-control.log
+    java -jar open-beat-control.jar -L /var/log/open-beat-control.log
 
 Other options allow you to specify the port number on which its OSC
 server listens, and there will be more to come.
@@ -77,11 +80,22 @@ server listens, and there will be more to come.
     -L, --log-file PATH         Log to a rotated file instead of stdout
     -h, --help                  Display help information and exit
 
+For more information about these, please see the [User
+Guide](https://obc-guide.deepsymmetry.org/README#options)
+
 ## User Guide
 
 To learn how to communicate with Open Beat Control, and the OSC
 messages you can send and receive, please see the
-[User Guide](https://obc-guide.deepsymmetry.org/).
+[User Guide :book:](https://obc-guide.deepsymmetry.org/).
+
+### Community
+
+For the moment, discussion of Open Beat Control is taking place on
+[Beat Link Trigger's Gitter
+channel](https://gitter.im/brunchboy/beat-link-trigger). If enough
+people start using it and discussing issues that aren't interesting to
+Beat Link Trigger users, I will create a separate channel.
 
 ## Funding
 

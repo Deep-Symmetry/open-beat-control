@@ -49,10 +49,56 @@ issues when things are not working the way you expect, but your
 general interaction with the program will be by sending and receiving
 OSC messages.
 
-Details of how to start and configure Open Beat Control can be found
-on the
-https://github.com/Deep-Symmetry/open-beat-control#usage[project
+Details of how to obtain Open Beat Control and the Java environment
+needed to run it can be found on the
+https://github.com/Deep-Symmetry/open-beat-control#installation[project
 page].
+
+Assuming you have configured your command path so that the JDK's
+`java` command is available, you can start Open Beat Control by simply
+typing the following command in a terminal session (or include it in a
+shell or command script):
+
+----
+java -jar open-beat-control.jar
+----
+
+This will log any informational and error messages to the terminal
+window in which you are running it. If you are configuring your system
+startup scripts to run Open Beat Control, you probably also want to
+set up a log-file path, so that these messages are sent to a rotated
+log file in your standard system logs directory, along these lines:
+
+----
+java -jar open-beat-control.jar -L /var/log/open-beat-control.log
+----
+
+There are other command-line options you can use as well.
+
+[[options]]
+=== Options
+
+----
+-o, --osc-port PORT  17002  Port number of OSC server
+-r, --real-player           Try to pose as a real CDJ (device #1-4)
+-L, --log-file PATH         Log to a rotated file instead of stdout
+-h, --help                  Display help information and exit
+----
+
+==== Posing as a real CDJ
+
+Unless you supply the `-r` or `--real-player` option, the Beat Link
+library will use an unused device number greater than 4. This means it
+can safely operate even when there are four real CDJs on the network
+(they will be using numbers 1 through 4). Thanks to a lot of clever
+research and trickery, we have figured out how to get most features
+working even when operating in this mode.
+
+But some things are simply impossible: if you want to be able to
+control the tempo of the CDJs, then Beat Link needs to be using a real
+player number. Passing this option tells it to try; if you have four
+players on the network, you will have to turn one of them off before
+starting Open Beat Control for this to work.
 
 == Learning More
 
