@@ -4,101 +4,13 @@
   connections to any Pioneer Pro DJ Link session that can be found,
   providing remote control via an OSC server."
   (:require [clojure.tools.cli :as cli]
+            [open-beat-control.logs :as logs]
             [open-beat-control.osc-server :as server]
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
-            [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
                                       VirtualCdj MasterListener DeviceUpdateListener Util])
   (:gen-class))
-
-(def ^:private osc-appender
-  "A timbre appender which sends the log as OSC /log messages to any
-  clients that have subscribed to the logging stream."
-  {:enabled?   true
-   :async?     false
-   :min-level  :info
-   :rate-limit nil
-   :output-fn  :inherit
-   :fn         (fn [data]
-                 (let [{:keys [output_]} data
-                       formatted-output  (force output_)]
-                   (server/publish-to-stream "/logging" "/log" formatted-output)))})
-
-(defn- create-appenders
-  "Create a set of appenders which rotate the log file at the
-  specified path as well as sending to registered OSC clients."
-  [path]
-  {:rotor (rotor/rotor-appender {:path     path
-                                 :max-size 100000
-                                 :backlog  5})
-   :osc   osc-appender})
-
-(defonce ^{:private true
-           :doc "If the user has requested logging to a log directory,
-  this will be set to an appropriate set of appenders. Defaults to`,
-  logging to stdout and registered OSC clients."}
-  appenders (atom {:println (timbre/println-appender {:stream :auto})
-                   :osc     osc-appender}))
-
-(defn output-fn
-  "Log format (fn [data]) -> string output fn.
-  You can modify default options with `(partial output-fn
-  <opts-map>)`. This is based on timbre's default, but removes the
-  hostname and stack trace fonts."
-  ([data] (output-fn nil data))
-  ([{:keys [no-stacktrace?] :as opts} data]
-   (let [{:keys [level ?err_ vargs_ msg_ ?ns-str hostname_
-                 timestamp_ ?line]} data]
-     (str
-             @timestamp_       " "
-       (clojure.string/upper-case (name level))  " "
-       "[" (or ?ns-str "?") ":" (or ?line "?") "] - "
-       (force msg_)
-       (when-not no-stacktrace?
-         (when-let [err (force ?err_)]
-           (str "\n" (timbre/stacktrace err (assoc opts :stacktrace-fonts {})))))))))
-
-(defn- init-logging-internal
-  "Performs the actual initialization of the logging environment,
-  protected by the delay below to insure it happens only once."
-  []
-  (timbre/set-config!
-   {:level :info  ; #{:trace :debug :info :warn :error :fatal :report}
-    :enabled? true
-
-    ;; Control log filtering by namespaces/patterns. Useful for turning off
-    ;; logging in noisy libraries, etc.:
-    :ns-whitelist  [] #_["my-app.foo-ns"]
-    :ns-blacklist  [] #_["taoensso.*"]
-
-    :middleware [] ; (fns [data]) -> ?data, applied left->right
-
-    :timestamp-opts {:pattern "yyyy-MMM-dd HH:mm:ss"
-                     :locale :jvm-default
-                     :timezone (java.util.TimeZone/getDefault)}
-
-    :output-fn output-fn ; (fn [data]) -> string
-    })
-
-  ;; Install the desired log appenders, if they have been configured
-  (when-let [custom-appenders @appenders]
-    (timbre/merge-config!
-     {:appenders custom-appenders})))
-
-(defonce ^{:private true
-           :doc "Used to ensure log initialization takes place exactly once."}
-  initialized (delay (init-logging-internal)))
-
-(defn init-logging
-  "Set up the logging environment for Open Beat Control. Called by main
-  when invoked as a jar, and by the examples namespace when brought up
-  in a REPL for exploration."
-  ([] ;; Resolve the delay, causing initialization to happen if it has not yet.
-   @initialized)
-  ([appenders-map] ;; Override the default appenders, then initialize as above.
-   (reset! appenders appenders-map)
-   (init-logging)))
 
 (defn- println-err
   "Prints objects to stderr followed by a newline."
@@ -191,11 +103,10 @@
         (:help options) (exit 0 (usage summary))
         (seq errors)    (exit 1 (str (error-msg errors) "\n\n" (usage summary)))))
 
-    ;; Set up the logging environment
-    (when-let [log-file (:log-file options)]
-      (reset! appenders (create-appenders log-file)))
-    (init-logging)
+    ;; Set up the logging environment.
+    (logs/init-logging (:log-file options))
 
+    ;; Create our OSC server to respond to commands.
     (server/open-server (:osc-port options))
     (timbre/info "Running OSC server on port" (:osc-port options))
 
