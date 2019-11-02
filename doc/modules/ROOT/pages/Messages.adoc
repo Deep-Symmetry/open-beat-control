@@ -73,10 +73,9 @@ stream.
 
 === Responses
 
-`/beat`:: Sent for each Beat packet seen while the stream is active. Each `/beat` message has five arguments:
-
-==== `/beat` Arguments
-
+`/beat`::
+Sent for each Beat packet seen while the stream is active. Each `/beat` message has five arguments:
++
 [cols="2m,1m,6",options="header",]
 |=======================================================================
 |Name |Type |Meaning
@@ -90,7 +89,7 @@ stream.
 ==== Examples
 
 * `/beat 2 4 131.603973 132. 0.997`
-
++
 Here, player 2 just started playing the final (fourth) beat of a bar,
 at 131.6 BPM. The natural track tempo at this point is 132 BPM, and it
 is playing at 99.7% normal speed.
