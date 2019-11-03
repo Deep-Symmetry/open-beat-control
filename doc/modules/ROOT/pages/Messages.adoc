@@ -98,7 +98,6 @@ at 131.6 BPM. The natural track tempo at this point is 132 BPM, and it
 is playing at 99.7% normal speed.
 
 
-
 [[devices]]
 == `/devices`
 
@@ -165,6 +164,7 @@ name, and its IP address.
 
 * `/device/found 2 CDJ-2000 172.30.20.5`
 * `/device/lost 33 DJM-2000 172.30.20.4`
+
 
 [[log]]
 == `/log`
@@ -373,6 +373,74 @@ which incoming messages are being received.
 === Responses
 
 _None_
+
+
+
+[[tempos]]
+== `/tempos`
+
+Find out the known tempos of Pro DJ Link devices on the network,
+either now or (by setting up a stream) as they change.
+
+=== Arguments
+
+[cols="1m,1m,2,5",options="header",]
+|=======================================================================
+
+|Name |Type |Default |Purpose
+|command |string |_n/a_ |The action you want to take, see below.
+
+|port |integer |The response port |If you want responses to go to a different port than normal, you can supply that port number here.
+
+|=======================================================================
+
+The behavior of this message is controlled by the value you send as
+the first argument. The port number to which the response is sent will
+be the default response port unless you supply a second argument, in
+which case the response will be sent to that port.
+
+==== Commands
+
+`list`:: Sends responses with all tempos currently known.
+
+`stream`:: Starts out just like the `list` command, but will also send
+responses any time a tempo change is seen on the network, until you
+send a `stop` command. You can have more than one stream running at
+the same time if you use different port numbers to set them up.
+
+`stop`:: Stops sending messages as tempos change. You must specify the
+same port number (or lack of one) as you used when setting up the
+stream.
+
+==== Examples
+
+* `/tempos list` (sends current tempos to default response port)
+* `/tempos list 4000` (sends current tempos to port 4000)
+* `/tempos stream` (sends current tempos to default response port,
+  and any tempo changes that happen in the future will be sent there
+  as well)
+* `/tempos stream 4200` (sends current tempos to port 4200, and any
+  tempo changes that happen in the future will be sent there as well)
+* `/tempos stop` (stops sending tempo changes to the default response
+  port)
+* `/tempos stop 4200` (stops sending tempo changes to port 4200)
+
+
+=== Responses
+
+`/tempo/`_device_:: Sent for each device whose tempo is known (and,
+for streams, for each tempo change for that device). The value of
+_device_ will either be the device number (1 through 4 for CDJs, 33
+for mixers), and the message's argument is the current effective tempo
+of that device. Additionally, the tempo of the current Tempo Master is
+reported as `/tempo/master`.
+
+==== Examples
+
+* `/tempo/33 127.190002`
+* `/tempo/master 127.190399`
+* `/tempo/2 127.190399`
+
 
 == Learning More
 

@@ -5,7 +5,7 @@
             :url  "http://www.eclipse.org/legal/epl-v20.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "0.4.2"]
-                 [org.deepsymmetry/beat-link "0.5.5"]
+                 [org.deepsymmetry/beat-link "0.5.6-SNAPSHOT"]
                  [overtone/osc-clj "0.9.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [com.fzakaria/slf4j-timbre "0.3.14"]]

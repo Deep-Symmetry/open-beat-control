@@ -89,6 +89,38 @@
         (catch Exception e
           (timbre/error e "Problem closing OSC client for host" host "port" port))))))
 
+(defonce ^{:private true
+           :doc "Holds last known interesting state elements of
+  players on the network, so we can report when changes happen. Top
+  level keys identify the category of interesting information; in
+  general, these are maps whose keys are the devices themselves, and
+  values are the last-known information for that device. There is also
+  a `:last` key which is used by `update-device-state` to save
+  previous state elements when updating them in order to check whether
+  they actually changed."}
+  state
+  (atom {}))
+
+(defn purge-device-state
+  "Gets rid of any saved state about the specified device, presumably
+  because it has disappeared."
+  [device]
+  (swap! state
+         (fn [current]
+           (-> current
+               (update :tempo dissoc device)))))
+
+(defn update-device-state
+  "Sets some element of interesting device state. Returns truthy if this
+  represents a change from the previous state."
+  [device kind value]
+  (let [updated (swap! state
+                       (fn [current]
+                         (-> current
+                             (assoc-in [:last kind device] (get-in current [kind device]))
+                             (assoc-in [kind device] value))))]
+    (not= (get-in updated [:last kind device]) value)))
+
 (defonce
   ^{:private true
     :doc "Keeps track of the OSC paths for which streaming updates have been
@@ -339,6 +371,44 @@
 
       (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
 
+(defn- announce-current-tempos
+  "Helper function that sends a set of tempo messages for all devices
+  whos tempos are currently known."
+  [client]
+  (let [current @state]
+    (doseq [device (keys (:tempo current))]
+      (osc/osc-send client (str "/tempo/" device) (get-in current [:tempo device])))))
+
+(defn- tempos-handler
+  "Handler for the /tempos path, which obtains information about the
+  tempos currently on the network.
+
+  Usage:
+    /tempos list port?    (sends current tempos)
+    /tempos stream port?  (streams tempo updates until stopped)
+    /tempos stop port?    (stops streaming tempo updates)
+
+  If `port` is omitted, the default response port is used."
+  [{:keys [args] :as msg}]
+  (let [[command port] args]
+    (case command
+
+      "list"
+      (when-let [[subscription client] (make-subscription msg port)]
+        (announce-current-tempos client)
+        (unsubscribe subscription))
+
+      "stream"
+      (start-stream msg port announce-current-tempos)
+
+      "stop"
+      (stop-stream msg port)
+
+      nil
+      (respond-with-error msg (str (:path msg) " requires a command."))
+
+      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -351,7 +421,8 @@
   (osc/osc-handle @server "/logging" logging-handler)
   (osc/osc-handle @server "/devices" devices-handler)
   (osc/osc-handle @server "/beats" beats-handler)
-  (osc/osc-handle @server "/master" master-handler))
+  (osc/osc-handle @server "/master" master-handler)
+  (osc/osc-handle @server "/tempos" tempos-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

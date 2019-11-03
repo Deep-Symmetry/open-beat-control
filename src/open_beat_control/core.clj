@@ -143,15 +143,33 @@
            (.stop virtual-cdj)
            #_(carabiner/unlock-tempo)))))
 
+    ;; Be ready for status packets once the VirtualCdj is running.
+    (.addUpdateListener
+     virtual-cdj
+     (reify DeviceUpdateListener
+       (received [_ status]
+         (let [device (.getDeviceNumber status)]
+           (when (not= 0xffff (.getBpm status))  ; If packet has a valid tempo, process it.
+             (let [tempo  (float (.getEffectiveTempo status))]
+               (when (server/update-device-state device :tempo tempo)
+                 (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))
+               (when (.isTempoMaster status)
+                 (when (server/update-device-state "master" :tempo tempo)
+                   (server/publish-to-stream "/tempos" "/tempo/master" tempo)))))))))
+
     ;; Also start watching for beat packets.
     (.start beat-finder)
     (.addBeatListener  ; And set up to respond to them.
      beat-finder
      (reify BeatListener
        (newBeat [_ beat]
-         (server/publish-to-stream "/beats" "/beat" (.getDeviceNumber beat) (.getBeatWithinBar beat)
-                                   (float (.getEffectiveTempo beat)) (float (/ (.getBpm beat) 100.0))
-                                   (float (Util/pitchToMultiplier (.getPitch beat)))))))
+         (let [device (.getDeviceNumber beat)
+               tempo  (float (.getEffectiveTempo beat))]
+           (server/publish-to-stream "/beats" "/beat" device (.getBeatWithinBar beat) tempo
+                                     (float (/ (.getBpm beat) 100.0))
+                                     (float (Util/pitchToMultiplier (.getPitch beat))))
+           (when (server/update-device-state device :tempo tempo)
+             (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))))
 
     ;; And register for tempo master changes, so we can pass them on to any subscribers.
     (.addMasterListener
@@ -164,6 +182,10 @@
        (masterChanged [_ device-update]
          (if device-update
            (server/publish-to-stream "/master" "/master/new" (.getDeviceNumber device-update))
-           (server/publish-to-stream "/master" "/master/none")))
+           (do (server/publish-to-stream "/master" "/master/none")
+               (server/purge-device-state "master"))))
        (tempoChanged [_ tempo]
-         (server/publish-to-stream "/master" "/master/tempo" (float tempo)))))))
+         (let [tempo (float tempo)]
+           (server/publish-to-stream "/master" "/master/tempo" tempo)
+           (when (server/update-device-state "master" :tempo tempo)
+             (server/publish-to-stream "/tempos" "/tempo/master" tempo))))))))
