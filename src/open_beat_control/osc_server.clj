@@ -300,6 +300,45 @@
 
       (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
 
+(defn- appoint-master
+  "Helper function for requests to appoint a new player as Tempo
+  Master."
+  [msg player]
+  (if (integer? player)
+    (try
+      (.appointTempoMaster virtual-cdj player)
+      (catch IllegalArgumentException e
+        (respond-with-error msg (.getMessage e))))
+    (respond-with-error msg (str (:path msg) "appoint requires an integer player number."))))
+
+(defn- master-handler
+  "Handler for the /beats command, which configures the reporting of
+  Tempo Master changes seen on the network, or appoints a new Master.
+
+  Usage:
+    /master stream port?   (streams updates until stopped)
+    /master stop port?     (stops streaming Tempo Master updates)
+    /master appoint player (tells player to become Tempo Master)
+
+  If `port` is omitted, the default response port is used."
+  [{:keys [args] :as msg}]
+  (let [[command port-or-player] args]
+    (case command
+
+      "stream"
+      (start-stream msg port-or-player)
+
+      "stop"
+      (stop-stream msg port-or-player)
+
+      "appoint"
+      (appoint-master msg port-or-player)
+
+      nil
+      (respond-with-error msg (str (:path msg) " requires a command."))
+
+      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -311,7 +350,8 @@
   (osc/osc-handle @server "/log" log-handler)
   (osc/osc-handle @server "/logging" logging-handler)
   (osc/osc-handle @server "/devices" devices-handler)
-  (osc/osc-handle @server "/beats" beats-handler))
+  (osc/osc-handle @server "/beats" beats-handler)
+  (osc/osc-handle @server "/master" master-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

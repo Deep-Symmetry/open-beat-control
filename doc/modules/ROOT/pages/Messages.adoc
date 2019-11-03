@@ -27,7 +27,7 @@ Control, and the responses (if any) that they will produce. Each
 message is identified by its OSC path.
 
 [[beats]]
-== /beats
+== `/beats`
 
 Tells Open Beat Control to report any Beat messages that are seen on
 the DJ Link network. This allows you to align performances at the beat
@@ -68,8 +68,7 @@ stream.
 * `/beats stream 2000` (Beat packets will be reported on port 2000)
 * `/beats stop` (stops reporting Beat packets on the default response
   port)
-* `/logging stop 2000` (stops reporting Beat packets on port 2000)
-
+* `/beats stop 2000` (stops reporting Beat packets on port 2000)
 
 === Responses
 
@@ -79,12 +78,16 @@ Sent for each Beat packet seen while the stream is active. Each `/beat` message 
 [cols="2m,1m,6",options="header",]
 |=======================================================================
 |Name |Type |Meaning
-|device |int |The player number that send the beat. Mixers use number 33.
+|device |int |The player number that sent the beat. Mixers use number 33.
 |beat |int |Position within measure, 1--4. Not meaningful from mixers.
 |tempo |float |Beats per minute being played.
-|track-tempo |float |Beats per minute of track at normal speed.
+|track-tempo |float |Beats per minute of the track at normal speed.
 |pitch |float |Speed at which track is being played, 1.0 means normal, 0.5 means half speed, etc.
 |=======================================================================
+
+NOTE: Beats from the mixer always report a pitch of `1.0`, so
+`track-tempo` is the same as `tempo` (which makes sense, since they
+don't have any actual track to play).
 
 ==== Examples
 
@@ -97,7 +100,7 @@ is playing at 99.7% normal speed.
 
 
 [[devices]]
-== /devices
+== `/devices`
 
 Find out what Pro DJ Link devices are visible on the network, either
 now or (by setting up a stream) as they come and go.
@@ -164,7 +167,7 @@ name, and its IP address.
 * `/device/lost 33 DJM-2000 172.30.20.4`
 
 [[log]]
-== /log
+== `/log`
 
 As described in the <<Communicating#sending,Communicating>> section,
 the `/log` message tells Open Beat Control to output the message to
@@ -184,7 +187,7 @@ received, to the console or log file.
 _None_
 
 [[logging]]
-== /logging
+== `/logging`
 
 Tells Open Beat Control to forward any log messages via OSC as well as
 writing them to its log file. This can be convenient if you are
@@ -240,8 +243,107 @@ while the stream is active.
 * `/log 2019-Oct-31 23:50:42 INFO [open-beat-control.core:222] - Virtual CDJ running as Player 5`
 
 
+[[master]]
+== `/master`
+
+Allows you to receive OSC messages when new players become Tempo
+Master, or when the current Tempo Master starts playing a new beat, or
+changes tempo. Also enables you to tell a specific player to become
+Tempo Master.
+
+=== Arguments
+
+[cols="1,1m,2,5",options="header",]
+|=======================================================================
+
+|Name |Type |Default |Purpose
+|`command` |string |_n/a_ |The action you want to take, see below.
+
+|`port` or `player` |integer |The response port or _n/a_ |For `stream` and `stop`, if you want responses to go to a different port than normal, you can supply that port number here. For `appoint` you must supply the player you want to become the new Master.
+
+|=======================================================================
+
+The command you send as the first argument determines the meaning of
+the second. The `stream` and `stop` commands control whether Tempo
+Master reporting is turned on or off; the port number to which the
+Tempo Master messages are sent will be the default response port
+unless you supply a second argument, `port`, in which case they will
+be sent to that port. The `appoint` command tells a player to become
+Tempo Master, and requires a `player` argument identifying the player
+number you want to appoint as Master.
+
+==== Commands
+
+`stream`:: Tells Open Beat Control to report Tempo Master updates as
+OSC messages (described below), to the specified port if you supply
+one, or to the default response port. You can have more than one
+stream running at the same time if you use different port numbers to
+set them up.
+
+`stop`:: Stops reporting Tempo Master updates over OSC. You must
+specify the same port number (or lack of one) as you used when setting
+up the stream.
+
+`appoint`:: Causes Open Beat Control to send a message to the player
+whose number you supply as a second argument, telling it to become the
+new Tempo Master if it can.
+
+==== Examples
+
+* `/master stream` (Tempo Master updates will be reported on the
+  default response port)
+* `/master stream 2010` (Tempo Master updates will be reported on port
+  2010)
+* `/master stop` (stops reporting Tempo Master updates on the default
+  response port)
+* `/master stop 2010` (stops reporting Tempo Master updates on port
+  2010)
+* `/master appoint 2` (tells Player 2 to become Tempo Master)
+
+=== Responses
+
+`/master/beat`:: Sent for each Beat packet seen from the Tempo Master
+while the stream is active. Each `/master/beat` message has five
+arguments:
++
+[cols="2m,1m,6",options="header",]
+|=======================================================================
+|Name |Type |Meaning
+|device |int |The player number that sent the beat. Mixers use number 33.
+|beat |int |Position within measure, 1--4. Not meaningful from mixers.
+|tempo |float |Beats per minute being played.
+|track-tempo |float |Beats per minute of the track at normal speed.
+|pitch |float |Speed at which track is being played, 1.0 means normal, 0.5 means half speed, etc.
+|=======================================================================
++
+NOTE: Beats from the mixer always report a pitch of `1.0`, so
+`track-tempo` is the same as `tempo` (which makes sense, since they
+don't have any actual track to play).
+
+`/master/tempo`:: Sent whenever the tempo reported by the Tempo Master
+changes. Its single `float` argument is the new tempo.
+
+`/master/new`:: Sent whenever a new player takes over as Tempo Master.
+Its single `int` argument is the number of the new Master player.
+
+`/master/none`:: Sent when the current Tempo Master resigns that role
+(perhaps by disappearing from the network) without another being
+appointed.
+
+==== Examples
+
+* `/master/beat 3 2 128. 128. 1.`
++
+Here, Player 3 was the Tempo Master and just started playing the
+second beat of a bar, at 128.0 BPM, which was the natural track tempo
+at this point, so it is playing at 100% normal speed.
+* `/master/tempo 128.1` (tempo has changed to 128.1 BPM)
+* `/master/new 2` (player 2 has just become the new Tempo Master)
+* `/master/none` (there is no longer a Tempo Master)
+
+
 [[respond]]
-== /respond
+== `/respond`
 
 As described in the <<Communicating#response-port,Communicating>>
 section, the `/respond` message tells Open Beat Control the port

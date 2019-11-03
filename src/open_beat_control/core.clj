@@ -153,4 +153,17 @@
                                    (float (.getEffectiveTempo beat)) (float (/ (.getBpm beat) 100.0))
                                    (float (Util/pitchToMultiplier (.getPitch beat)))))))
 
-))
+    ;; And register for tempo master changes, so we can pass them on to any subscribers.
+    (.addMasterListener
+     virtual-cdj
+     (reify MasterListener
+       (newBeat [_ beat]
+         (server/publish-to-stream "/master" "/master/beat" (.getDeviceNumber beat) (.getBeatWithinBar beat)
+                                   (float (.getEffectiveTempo beat)) (float (/ (.getBpm beat) 100.0))
+                                   (float (Util/pitchToMultiplier (.getPitch beat)))))
+       (masterChanged [_ device-update]
+         (if device-update
+           (server/publish-to-stream "/master" "/master/new" (.getDeviceNumber device-update))
+           (server/publish-to-stream "/master" "/master/none")))
+       (tempoChanged [_ tempo]
+         (server/publish-to-stream "/master" "/master/tempo" (float tempo)))))))
