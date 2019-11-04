@@ -152,10 +152,7 @@
            (when (not= 0xffff (.getBpm status))  ; If packet has a valid tempo, process it.
              (let [tempo  (float (.getEffectiveTempo status))]
                (when (server/update-device-state device :tempo tempo)
-                 (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))
-               (when (.isTempoMaster status)
-                 (when (server/update-device-state "master" :tempo tempo)
-                   (server/publish-to-stream "/tempos" "/tempo/master" tempo)))))))))
+                 (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))))))
 
     ;; Also start watching for beat packets.
     (.start beat-finder)
@@ -181,11 +178,9 @@
                                    (float (Util/pitchToMultiplier (.getPitch beat)))))
        (masterChanged [_ device-update]
          (if device-update
-           (server/publish-to-stream "/master" "/master/new" (.getDeviceNumber device-update))
+           (server/publish-to-stream "/master" "/master/player" (.getDeviceNumber device-update))
            (do (server/publish-to-stream "/master" "/master/none")
                (server/purge-device-state "master"))))
        (tempoChanged [_ tempo]
          (let [tempo (float tempo)]
-           (server/publish-to-stream "/master" "/master/tempo" tempo)
-           (when (server/update-device-state "master" :tempo tempo)
-             (server/publish-to-stream "/tempos" "/tempo/master" tempo))))))))
+           (server/publish-to-stream "/master" "/master/tempo" tempo)))))))

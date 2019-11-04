@@ -202,6 +202,52 @@
      (swap! active-streams assoc-in [(:path incoming) subscription] client)
      (when init-fn (init-fn client)))))
 
+(defn- streamable-handler
+  "Generic handler for the most common command pattern, which supports
+  listing, streaming, and stopping the stream of a category of
+  information, where `/path` is something like `/devices` or
+  `/tempos`.
+
+  The pattern is:
+    /path list port?    (sends current state of the category)
+    /path stream port?  (streams category updates until stopped)
+    /path stop port?    (stops streaming category updates)
+
+  If `port` is omitted, the default response port is used.
+
+  Arguments to this function are the OSC message that was received for
+  the handler, and a function that can be called with an OSC client to
+  send the current state of the category of information that the
+  handler is responsible for reporting.
+
+  If `extra-command-handler` is supplied, it will be called with the
+  message arguments and the full message when an unrecognized command
+  is received. If it handles it successfully, it must return a truthy
+  value. If there is no extra command handler, or it returns falsey,
+  an error will be reported about the unrecognized command."
+  ([msg send-current-state]
+   (streamable-handler msg send-current-state nil))
+  ([{:keys [args] :as msg} send-current-state extra-command-handler]
+   (or (and extra-command-handler (extra-command-handler args msg))
+       (let [[command port] args]
+         (case command
+
+           "list"
+           (when-let [[subscription client] (make-subscription msg port)]
+             (send-current-state client)
+             (unsubscribe subscription))
+
+           "stream"
+           (start-stream msg port send-current-state)
+
+           "stop"
+           (stop-stream msg port)
+
+           nil
+           (respond-with-error msg (str (:path msg) " requires a command."))
+
+           (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))))
+
 (defn build-device-announcement-args
   "Builds the OSC arguments used to report a device announcement."
   [^org.deepsymmetry.beatlink.DeviceAnnouncement announcement]
@@ -220,34 +266,10 @@
     (send-device-announcement announcement client)))
 
 (defn- devices-handler
-  "Handler for the /devices path, which obtains information about the
-  devices currently on the network.
-
-  Usage:
-    /devices list port?    (sends current devices)
-    /devices stream port?  (streams device updates until stopped)
-    /devices stop port?    (stops streaming device updates)
-
-  If `port` is omitted, the default response port is used."
-  [{:keys [args] :as msg}]
-  (let [[command port] args]
-    (case command
-
-      "list"
-      (when-let [[subscription client] (make-subscription msg port)]
-        (announce-current-devices client)
-        (unsubscribe subscription))
-
-      "stream"
-      (start-stream msg port announce-current-devices)
-
-      "stop"
-      (stop-stream msg port)
-
-      nil
-      (respond-with-error msg (str (:path msg) " requires a command."))
-
-      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+  "Standad streaming handler for the /devices path, which obtains
+  information about the devices currently on the network."
+  [msg]
+  (streamable-handler msg announce-current-devices))
 
 (defn- update-osc-client
   "Sets an OSC client to send messages to the specified host and port.
@@ -343,33 +365,28 @@
         (respond-with-error msg (.getMessage e))))
     (respond-with-error msg (str (:path msg) "appoint requires an integer player number."))))
 
+(defn- announce-current-master
+  "Helper function that sends whatever is known about the tempo master
+  state."
+  [client]
+  (if-let [master (.getTempoMaster virtual-cdj)]
+    (do
+      (osc/osc-send client "/master/player" (.getDeviceNumber master))
+      (osc/osc-send client "/master/tempo" (float (.getMasterTempo virtual-cdj))))
+    (osc/osc-send client "/master/none")))
+
 (defn- master-handler
-  "Handler for the /beats command, which configures the reporting of
-  Tempo Master changes seen on the network, or appoints a new Master.
-
-  Usage:
-    /master stream port?   (streams updates until stopped)
-    /master stop port?     (stops streaming Tempo Master updates)
-    /master appoint player (tells player to become Tempo Master)
-
-  If `port` is omitted, the default response port is used."
-  [{:keys [args] :as msg}]
-  (let [[command port-or-player] args]
-    (case command
-
-      "stream"
-      (start-stream msg port-or-player)
-
-      "stop"
-      (stop-stream msg port-or-player)
-
-      "appoint"
-      (appoint-master msg port-or-player)
-
-      nil
-      (respond-with-error msg (str (:path msg) " requires a command."))
-
-      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+  "Standard stream handler for the /master command, which configures the
+  reporting of Tempo Master changes seen on the network. Also supports
+  an `appoint` command which appoints a new Master:
+    /master appoint player (tells player to become Tempo Master)"
+  [msg]
+  (streamable-handler msg announce-current-master
+                      (fn [args msg]
+                        (let [[command port-or-player] args]
+                          (when (= command "appoint")
+                            (appoint-master msg port-or-player)
+                            true)))))
 
 (defn- announce-current-tempos
   "Helper function that sends a set of tempo messages for all devices
@@ -380,34 +397,10 @@
       (osc/osc-send client (str "/tempo/" device) (get-in current [:tempo device])))))
 
 (defn- tempos-handler
-  "Handler for the /tempos path, which obtains information about the
-  tempos currently on the network.
-
-  Usage:
-    /tempos list port?    (sends current tempos)
-    /tempos stream port?  (streams tempo updates until stopped)
-    /tempos stop port?    (stops streaming tempo updates)
-
-  If `port` is omitted, the default response port is used."
-  [{:keys [args] :as msg}]
-  (let [[command port] args]
-    (case command
-
-      "list"
-      (when-let [[subscription client] (make-subscription msg port)]
-        (announce-current-tempos client)
-        (unsubscribe subscription))
-
-      "stream"
-      (start-stream msg port announce-current-tempos)
-
-      "stop"
-      (stop-stream msg port)
-
-      nil
-      (respond-with-error msg (str (:path msg) " requires a command."))
-
-      (respond-with-error msg (str "Unknown " (:path msg) " command:") command))))
+  "Standard streaming handler for the /tempos path, which obtains
+  information about the tempos currently on the network."
+  [msg]
+  (streamable-handler msg announce-current-tempos))
 
 (defn open-server
   "Starts our server listening on the specified port number, and

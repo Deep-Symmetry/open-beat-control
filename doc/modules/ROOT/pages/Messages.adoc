@@ -264,15 +264,21 @@ Tempo Master.
 |=======================================================================
 
 The command you send as the first argument determines the meaning of
-the second. The `stream` and `stop` commands control whether Tempo
-Master reporting is turned on or off; the port number to which the
-Tempo Master messages are sent will be the default response port
-unless you supply a second argument, `port`, in which case they will
-be sent to that port. The `appoint` command tells a player to become
-Tempo Master, and requires a `player` argument identifying the player
-number you want to appoint as Master.
+the second. As with other streamable commands, the `list` command
+reports the current state of the Tempo Master, while the `stream` and
+`stop` commands control whether Tempo Master reporting is turned on or
+off; the port number to which the Tempo Master messages are sent will
+be the default response port unless you supply a second argument,
+`port`, in which case they will be sent to that port.
+
+The `appoint` command tells a player to become Tempo Master, and
+requires a `player` argument identifying the player number you want to
+appoint as Master.
 
 ==== Commands
+
+`list`:: Sends responses describing what is known about the current
+tempo master, if any.
 
 `stream`:: Tells Open Beat Control to report Tempo Master updates as
 OSC messages (described below), to the specified port if you supply
@@ -290,10 +296,14 @@ new Tempo Master if it can.
 
 ==== Examples
 
+* `/master list` (sends responses about the curent Tempo Master to
+  the default response port)
+* `/master list 2010` (sends information about the current Tempo
+  Master to port 2010)
 * `/master stream` (Tempo Master updates will be reported on the
-  default response port)
+  default response port until stopped)
 * `/master stream 2010` (Tempo Master updates will be reported on port
-  2010)
+  2010 until stopped)
 * `/master stop` (stops reporting Tempo Master updates on the default
   response port)
 * `/master stop 2010` (stops reporting Tempo Master updates on port
@@ -323,7 +333,7 @@ don't have any actual track to play).
 `/master/tempo`:: Sent whenever the tempo reported by the Tempo Master
 changes. Its single `float` argument is the new tempo.
 
-`/master/new`:: Sent whenever a new player takes over as Tempo Master.
+`/master/player`:: Sent whenever a new player takes over as Tempo Master.
 Its single `int` argument is the number of the new Master player.
 
 `/master/none`:: Sent when the current Tempo Master resigns that role
@@ -338,7 +348,7 @@ Here, Player 3 was the Tempo Master and just started playing the
 second beat of a bar, at 128.0 BPM, which was the natural track tempo
 at this point, so it is playing at 100% normal speed.
 * `/master/tempo 128.1` (tempo has changed to 128.1 BPM)
-* `/master/new 2` (player 2 has just become the new Tempo Master)
+* `/master/player 2` (player 2 has just become the new Tempo Master)
 * `/master/none` (there is no longer a Tempo Master)
 
 
@@ -432,13 +442,11 @@ stream.
 for streams, for each tempo change for that device). The value of
 _device_ will either be the device number (1 through 4 for CDJs, 33
 for mixers), and the message's argument is the current effective tempo
-of that device. Additionally, the tempo of the current Tempo Master is
-reported as `/tempo/master`.
+of that device.
 
 ==== Examples
 
 * `/tempo/33 127.190002`
-* `/tempo/master 127.190399`
 * `/tempo/2 127.190399`
 
 
