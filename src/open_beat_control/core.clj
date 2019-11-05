@@ -171,7 +171,10 @@
                                      (float (/ (.getBpm beat) 100.0))
                                      (float (Util/pitchToMultiplier (.getPitch beat))))
            (when (server/update-device-state device :tempo tempo)
-             (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))))
+             (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))
+           (when (<= 1 device 4)  ; Beats from CDJs might be first indication they are playing.
+             (when (server/update-device-state device :playing (int 1))
+               (server/publish-to-stream "/playing" (str "/playing" device) (int 1))))))))
 
     ;; And register for tempo master changes, so we can pass them on to any subscribers.
     (.addMasterListener
