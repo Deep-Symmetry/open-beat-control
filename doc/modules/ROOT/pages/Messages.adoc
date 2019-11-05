@@ -228,39 +228,17 @@ The `appoint` command tells a player to become Tempo Master, and
 requires a `player` argument identifying the player number you want to
 appoint as Master.
 
-==== Commands
-
-`list`:: Sends responses describing what is known about the current
-tempo master, if any.
-
-`stream`:: Tells Open Beat Control to report Tempo Master updates as
-OSC messages (described below), to the specified port if you supply
-one, or to the default response port. You can have more than one
-stream running at the same time if you use different port numbers to
-set them up.
-
-`stop`:: Stops reporting Tempo Master updates over OSC. You must
-specify the same port number (or lack of one) as you used when setting
-up the stream.
-
+:stream-type: Tempo Master state
+:stream-omit-examples: true
+include::partial$stream_commands.adoc[]
 `appoint`:: Causes Open Beat Control to send a message to the player
 whose number you supply as a second argument, telling it to become the
 new Tempo Master if it can.
 
-==== Examples
-
-* `/master list` (sends responses about the curent Tempo Master to
-  the default response port)
-* `/master list 2010` (sends information about the current Tempo
-  Master to port 2010)
-* `/master stream` (Tempo Master updates will be reported on the
-  default response port until stopped)
-* `/master stream 2010` (Tempo Master updates will be reported on port
-  2010 until stopped)
-* `/master stop` (stops reporting Tempo Master updates on the default
-  response port)
-* `/master stop 2010` (stops reporting Tempo Master updates on port
-  2010)
+:stream-type: Tempo Master state
+:stream-command: /master
+:stream-port: 2010
+include::partial$stream_examples.adoc[]
 * `/master appoint 2` (tells Player 2 to become Tempo Master)
 
 === Responses
