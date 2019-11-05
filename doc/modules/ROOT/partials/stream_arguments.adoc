@@ -1,3 +1,4 @@
+
 === Arguments
 
 [cols="1m,1m,2,5",options="header",]
@@ -10,9 +11,14 @@
 
 |=======================================================================
 
-ifeval::[{includeArgumentDescriptions} == true]
+ifndef::omit-argument-descriptions[]
+:omit-argument-descriptions: false
+endif::[]
+ifeval::[{omit-argument-descriptions} != true]
 The behavior of this message is controlled by the value you send as
 the first argument. The port number to which the response is sent will
 be the default response port unless you supply a second argument, in
 which case the response will be sent to that port.
 endif::[]
+
+:omit-argument-descriptions: false

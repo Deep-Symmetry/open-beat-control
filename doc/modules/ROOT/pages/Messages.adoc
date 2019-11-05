@@ -33,7 +33,7 @@ Tells Open Beat Control to report any Beat messages that are seen on
 the DJ Link network. This allows you to align performances at the beat
 and bar level.
 
-:includeArgumentDescriptions: false
+:omit-argument-descriptions: true
 include::partial$stream_arguments.adoc[]
 
 The command you send as the first argument determines whether beat
@@ -95,13 +95,13 @@ is playing at 99.7% normal speed.
 Find out what Pro DJ Link devices are visible on the network, either
 now or (by setting up a stream) as they come and go.
 
-:includeArgumentDescriptions: true
 include::partial$stream_arguments.adoc[]
 
-:streamType: device
-:streamCommand: /devices
-:streamPort: 4000
+:stream-type: device
+:stream-command: /devices
+:stream-port: 4000
 include::partial$stream_commands.adoc[]
+
 
 === Responses
 
@@ -311,12 +311,11 @@ at this point, so it is playing at 100% normal speed.
 Find out the playing states of Pro DJ Link players on the network,
 either now or (by setting up a stream) as they change.
 
-:includeArgumentDescriptions: true
 include::partial$stream_arguments.adoc[]
 
-:streamType: playing state
-:streamCommand: /playing
-:streamPort: 4001
+:stream-type: playing state
+:stream-command: /playing
+:stream-port: 4001
 include::partial$stream_commands.adoc[]
 
 === Responses
@@ -372,12 +371,11 @@ _None_
 Find out the known tempos of Pro DJ Link devices on the network,
 either now or (by setting up a stream) as they change.
 
-:includeArgumentDescriptions: true
 include::partial$stream_arguments.adoc[]
 
-:streamType: tempo
-:streamCommand: /tempo
-:streamPort: 4200
+:stream-type: tempo
+:stream-command: /tempo
+:stream-port: 4200
 include::partial$stream_commands.adoc[]
 
 === Responses

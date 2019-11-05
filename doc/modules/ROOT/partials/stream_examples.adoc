@@ -1,0 +1,17 @@
+
+==== Examples
+
+* `{stream-command} list` (sends current {stream-type}s to default
+  response port)
+* `{stream-command} list {stream-port}` (sends current {stream-type}s
+  to port {stream-port})
+* `{stream-command} stream` (sends current {stream-type}s to default
+  response port, and any {stream-type} changes that happen in the
+  future will be sent there as well)
+* `{stream-command} stream {stream-port}` (sends current
+  {stream-type}s to port {stream-port}, and any {stream-type} changes
+  that happen in the future will be sent there as well)
+* `{stream-command} stop` (stops sending {stream-type} changes to the
+  default response port)
+* `{stream-command} stop {stream-port}` (stops sending {stream-type}
+  changes to port {stream-port})
