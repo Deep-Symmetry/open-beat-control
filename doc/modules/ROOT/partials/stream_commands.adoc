@@ -1,0 +1,26 @@
+==== Commands
+
+`list`:: Sends responses with all {streamType}s currently known.
+
+`stream`:: Starts out just like the `list` command, but will also send
+responses any time a {streamType} change is seen on the network, until
+you send a `stop` command. You can have more than one {streamType}
+stream running at the same time if you use different port numbers to
+set them up.
+
+`stop`:: Stops sending messages as {streamType}s change. You must specify the
+same port number (or lack of one) as you used when setting up the
+stream.
+
+==== Examples
+
+* `{streamCommand} list` (sends current {streamType}s to default response port)
+* `{streamCommand} list {streamPort}` (sends current {streamType}s to port {streamPort})
+* `{streamCommand} stream` (sends current {streamType}s to default response port,
+  and any {streamType} changes that happen in the future will be sent there
+  as well)
+* `{streamCommand} stream {streamPort}` (sends current {streamType}s to port {streamPort}, and any
+  {streamType} changes that happen in the future will be sent there as well)
+* `{streamCommand} stop` (stops sending {streamType} changes to the default response
+  port)
+* `{streamCommand} stop {streamPort}` (stops sending {streamType} changes to port {streamPort})

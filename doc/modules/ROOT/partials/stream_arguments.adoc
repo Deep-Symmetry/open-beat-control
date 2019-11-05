@@ -1,0 +1,18 @@
+=== Arguments
+
+[cols="1m,1m,2,5",options="header",]
+|=======================================================================
+
+|Name |Type |Default |Purpose
+|command |string |_n/a_ |The action you want to take, see below.
+
+|port |integer |The response port |If you want responses to go to a different port than normal, you can supply that port number here.
+
+|=======================================================================
+
+ifeval::[{includeArgumentDescriptions} == true]
+The behavior of this message is controlled by the value you send as
+the first argument. The port number to which the response is sent will
+be the default response port unless you supply a second argument, in
+which case the response will be sent to that port.
+endif::[]
