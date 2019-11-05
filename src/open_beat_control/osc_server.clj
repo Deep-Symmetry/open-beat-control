@@ -108,6 +108,7 @@
   (swap! state
          (fn [current]
            (-> current
+               (update :playing dissoc device)
                (update :tempo dissoc device)))))
 
 (defn update-device-state
@@ -390,7 +391,7 @@
 
 (defn- announce-current-tempos
   "Helper function that sends a set of tempo messages for all devices
-  whos tempos are currently known."
+  whose tempos are currently known."
   [client]
   (let [current @state]
     (doseq [device (keys (:tempo current))]
@@ -401,6 +402,20 @@
   information about the tempos currently on the network."
   [msg]
   (streamable-handler msg announce-current-tempos))
+
+(defn- announce-current-playing-states
+  "Helper function that sends a set of tempo messages for all devices
+  whose playing states are currently known."
+  [client]
+  (let [current @state]
+    (doseq [device (keys (:playing current))]
+      (osc/osc-send client (str "/playing/" device) (get-in current [:playing device])))))
+
+(defn- playing-handler
+  "Standard streaming handler for the /playing path, which obtains
+  information about the playing states of devices on the network."
+  [msg]
+  (streamable-handler msg announce-current-playing-states))
 
 (defn open-server
   "Starts our server listening on the specified port number, and
@@ -415,7 +430,8 @@
   (osc/osc-handle @server "/devices" devices-handler)
   (osc/osc-handle @server "/beats" beats-handler)
   (osc/osc-handle @server "/master" master-handler)
-  (osc/osc-handle @server "/tempos" tempos-handler))
+  (osc/osc-handle @server "/tempos" tempos-handler)
+  (osc/osc-handle @server "/playing" playing-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

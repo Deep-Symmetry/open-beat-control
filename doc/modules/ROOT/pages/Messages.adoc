@@ -305,6 +305,34 @@ at this point, so it is playing at 100% normal speed.
 * `/master/none` (there is no longer a Tempo Master)
 
 
+[[playing]]
+== `/playing`
+
+Find out the playing states of Pro DJ Link players on the network,
+either now or (by setting up a stream) as they change.
+
+:includeArgumentDescriptions: true
+include::partial$stream_arguments.adoc[]
+
+:streamType: playing state
+:streamCommand: /playing
+:streamPort: 4001
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/playing/``\{device}:: Sent for each device whose playing state is
+known (and, for streams, for each playing state change for that
+device). The value of _\{device}_ will be the device number (1 through
+4), and the message's argument is `0` if the device is stopped, and
+`1` if it is playing.
+
+==== Examples
+
+* `/playing/2 1`
+* `/playing/3 0`
+
+
 [[respond]]
 == `/respond`
 
@@ -336,7 +364,6 @@ which incoming messages are being received.
 === Responses
 
 _None_
-
 
 
 [[tempos]]

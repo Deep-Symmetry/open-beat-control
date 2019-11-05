@@ -9,7 +9,7 @@
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
-                                      VirtualCdj MasterListener DeviceUpdateListener Util])
+                                      VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus])
   (:gen-class))
 
 (defn- println-err
@@ -137,6 +137,7 @@
        (deviceLost [_ announcement]
          (apply server/publish-to-stream "/devices" "/device/lost"
                 (server/build-device-announcement-args announcement))
+         (server/purge-device-state (.getDeviceNumber announcement))
          (timbre/info "Pro DJ Link Device Lost:" announcement)
          (when (empty? (.getCurrentDevices device-finder))
            (timbre/info "Shutting down Virtual CDJ.")  ; We have lost the last device, so shut down for now.
@@ -152,7 +153,11 @@
            (when (not= 0xffff (.getBpm status))  ; If packet has a valid tempo, process it.
              (let [tempo  (float (.getEffectiveTempo status))]
                (when (server/update-device-state device :tempo tempo)
-                 (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))))))
+                 (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))
+           (when (instance? CdjStatus status)  ; Manage CDJ-only streams.
+             (let [playing (if (.isPlaying status) (int 1) (int 0))]
+               (when (server/update-device-state device :playing playing)
+                 (server/publish-to-stream "/playing" (str "/playing/" device) playing))))))))
 
     ;; Also start watching for beat packets.
     (.start beat-finder)
@@ -179,8 +184,7 @@
        (masterChanged [_ device-update]
          (if device-update
            (server/publish-to-stream "/master" "/master/player" (.getDeviceNumber device-update))
-           (do (server/publish-to-stream "/master" "/master/none")
-               (server/purge-device-state "master"))))
+           (server/publish-to-stream "/master" "/master/none")))
        (tempoChanged [_ tempo]
          (let [tempo (float tempo)]
            (server/publish-to-stream "/master" "/master/tempo" tempo)))))))
