@@ -404,7 +404,7 @@
   (streamable-handler msg announce-current-tempos))
 
 (defn- announce-current-playing-states
-  "Helper function that sends a set of tempo messages for all devices
+  "Helper function that sends a set of playing messages for all devices
   whose playing states are currently known."
   [client]
   (let [current @state]
@@ -416,6 +416,91 @@
   information about the playing states of devices on the network."
   [msg]
   (streamable-handler msg announce-current-playing-states))
+
+(defn- announce-current-sync-states
+  "Helper function that sends a set of synced messages for all devices
+  whose sync states are currently known."
+  [client]
+  (let [current @state]
+    (doseq [device (keys (:synced current))]
+      (osc/osc-send client (str "/sync/" device) (get-in current [:synced device])))))
+
+(defn- synced-handler
+  "Standard streaming handler for the /synced path, which obtains
+  information about the sync state of devices on the network."
+  [msg]
+  (streamable-handler msg announce-current-sync-states))
+
+(defn- announce-current-on-air-states
+  "Helper function that sends a set of on-air messages for all devices
+  whose on-air states are currently known."
+  [client]
+  (let [current @state]
+    (doseq [device (keys (:on-air current))]
+      (osc/osc-send client (str "/on-air/" device) (get-in current [:on-air device])))))
+
+(defn- on-air-handler
+  "Standard streaming handler for the /on-air path, which obtains
+  information about the on-air state of devices on the network."
+  [msg]
+  (streamable-handler msg announce-current-on-air-states))
+
+(defn gather-on-off-sets
+  "Helper for collecting arguments of commands that turn on and off
+  features of sets of players. Each positive integer in the arguments
+  is collected in the `on` set, and negative integers' absolute values
+  are collected in the `off` set. Both sets are returned as a tuple."
+  [args]
+  (reduce (fn [[on off] arg]
+            (cond
+              (pos-int? arg)
+              [(conj on (int arg)) off]
+
+              (neg-int? arg)
+              [on (conj off (int (- arg)))]
+
+              :else
+              [on off]))
+          [#{} #{}]
+          args))
+
+(defn- fader-start-handler
+  "Sends a fader start message to start some players (as long as they
+  are paused at the cue point) and stop others. Send positive player
+  numbers to try starting them, and negative player numbers to try
+  stopping them."
+  [msg]
+  (let [[start stop] (gather-on-off-sets (:args msg))]
+    (try
+      (.sendFaderStartCommand virtual-cdj start stop)
+      (catch Exception e
+        (respond-with-error msg "Problem sending fader start command" (.getMessage e))))))
+
+(defn- set-sync-handler
+  "Turns sync mode on or off for player numbers passed as
+  arguments (positive to turn on, negative to turn off)."
+  [msg]
+  (let [[on off] (gather-on-off-sets (:args msg))]
+    (doseq [device on]
+      (try
+        (.sendSyncModeCommand virtual-cdj device true)
+        (catch Exception e
+          (respond-with-error msg (str "Unable to turn on sync for device" device ":") (.getMessage e)))))
+    (doseq [device off]
+      (try
+        (.sendSyncModeCommand virtual-cdj device false)
+        (catch Exception e
+          (respond-with-error msg (str "Unable to turn off sync for device" device ":") (.getMessage e)))))))
+
+(defn- set-on-air-handler
+  "Turns the on-air state on or off for player numbers passed as
+  arguments (positive to turn on, negative to turn off)."
+  [msg]
+  (let [[on _] (gather-on-off-sets (:args msg))]
+    (try
+      (.sendOnAirCommand virtual-cdj on)
+      (catch Exception e
+        (respond-with-error msg "Problem sending on-air command" (.getMessage e))))))
 
 (defn open-server
   "Starts our server listening on the specified port number, and
@@ -431,7 +516,12 @@
   (osc/osc-handle @server "/beats" beats-handler)
   (osc/osc-handle @server "/master" master-handler)
   (osc/osc-handle @server "/tempos" tempos-handler)
-  (osc/osc-handle @server "/playing" playing-handler))
+  (osc/osc-handle @server "/playing" playing-handler)
+  (osc/osc-handle @server "/synced" synced-handler)
+  (osc/osc-handle @server "/set-sync" set-sync-handler)
+  (osc/osc-handle @server "/on-air" on-air-handler)
+  (osc/osc-handle @server "/set-on-air" set-on-air-handler)
+  (osc/osc-handle @server "/fader-start" fader-start-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

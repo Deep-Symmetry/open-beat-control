@@ -33,7 +33,7 @@ Tells Open Beat Control to report any Beat messages that are seen on
 the DJ Link network. This allows you to align performances at the beat
 and bar level.
 
-:omit-argument-descriptions: true
+:omit-argument-descriptions:
 include::partial$stream_arguments.adoc[]
 
 The command you send as the first argument determines whether beat
@@ -117,6 +117,31 @@ name, and its IP address.
 
 * `/device/found 2 CDJ-2000 172.30.20.5`
 * `/device/lost 33 DJM-2000 172.30.20.4`
+
+
+[[fader-start]]
+== `/fader-start`
+
+Uses the Fader Start mechanism to tell some players to start or stop
+playing. (They will only start if they are paused at the current cue
+point.)
+
+=== Arguments
+
+You can supply one or more device numbers as arguments. If those
+numbers are positive, that player will be told to start playing. If
+any number is negative, it will be converted to a postive number and
+that player will be told to stop.
+
+==== Examples
+
+* `/fader-start 1 -2` (try to start player 1, and stop player 2)
+
+=== Responses
+
+If there is a problem sending the message, an `/error` response will
+describe it. Otherwise, if you have a <<playing,`/playing` stream>>
+active, any playing state changes will be reported to that stream.
 
 
 [[log]]
@@ -229,7 +254,7 @@ requires a `player` argument identifying the player number you want to
 appoint as Master.
 
 :stream-type: Tempo Master state
-:stream-omit-examples: true
+:stream-omit-examples:
 include::partial$stream_commands.adoc[]
 `appoint`:: Causes Open Beat Control to send a message to the player
 whose number you supply as a second argument, telling it to become the
@@ -283,17 +308,53 @@ at this point, so it is playing at 100% normal speed.
 * `/master/none` (there is no longer a Tempo Master)
 
 
+[[on-air]]
+== `/on-air`
+
+Find out the on-air states of Pro DJ Link devices on the network,
+either now or (by setting up a stream) as they change.
+
+include::partial$stream_arguments.adoc[]
+
+:stream-type: on-air state
+:stream-command: /on-air
+:stream-port: 4001
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/on-air/``\{device}:: Sent for each device whose on-air state is
+known (and, for streams, for each on-air state change for that
+device). The value of _\{device}_ will be the device number (1 through
+4), and the message's argument is `0` if the device is off-air (not
+audible), and `1` if it is on-air (connected to a mixer channel whose
+output is currently audible).
+
+NOTE: The on-air value of a device will only be meaningful if it is conneted
+to a Nexus mixer and this feature is active. If there is no Nexus
+mixer on the network, you can change players' on-air state using the
+<<set-on-air,`/set-on-air` message>>. (If there is a Nexus mixer
+present, it will reset the on-air states of the devices to what it
+believes they should be a fraction of a second after they react to
+your command.)
+
+==== Examples
+
+* `/on-air/1 0`
+* `/on-air/2 1`
+
+
 [[playing]]
 == `/playing`
 
-Find out the playing states of Pro DJ Link players on the network,
+Find out the playing states of Pro DJ Link devices on the network,
 either now or (by setting up a stream) as they change.
 
 include::partial$stream_arguments.adoc[]
 
 :stream-type: playing state
 :stream-command: /playing
-:stream-port: 4001
+:stream-port: 4002
 include::partial$stream_commands.adoc[]
 
 === Responses
@@ -308,6 +369,9 @@ device). The value of _\{device}_ will be the device number (1 through
 
 * `/playing/2 1`
 * `/playing/3 0`
+
+NOTE: You can control players' playing state using the
+<<fader-start,`/fader-start` message>>.
 
 
 [[respond]]
@@ -341,6 +405,95 @@ which incoming messages are being received.
 === Responses
 
 _None_
+
+[[set-on-air]]
+== `/set-on-air`
+
+Sends a message telling the CDJs which are on-air (that is, which are
+connected to a mixer channel whose output is currently audible, given
+the positions of the channel faders and cross-fader).
+
+If there is an actual Nexus mixer on the network, this is not a very
+useful message, because within a fraction of a second of the players
+responding to it, the mixer will send out a new on-air message telling
+the players the actual state of its faders. But if you are using
+another kind of mixer that sends MIDI messages about its fader state,
+you can translate those messages to on-air states of the players using
+this message to achieve results like a Nexus mixer.
+
+=== Arguments
+
+With no arguments, all players are set to off-air. Supply the device
+numbers of the players that are currently on-air as arguments, and
+those players will be set on-air.
+
+==== Examples
+
+* `/set-on-air` (all players are off the air)
+* `/set-on-air 1 3` (players 1 and 3 are on the air, 2 and 4 are off)
+
+=== Responses
+
+If there is a problem sending the message, an `/error` response will
+describe it. Otherwise, if you have an <<on-air,`/on-air` stream>>
+active, the on-air state changes of the players will be reported on
+that stream.
+
+
+[[set-sync]]
+== `/set-sync`
+
+Sends messages telling CDJs (or the mixer) to turn Sync mode on or off.
+
+=== Arguments
+
+You can supply one or more device numbers as arguments. If those
+numbers are positive, that player (or the mixer, for device number 33)
+will be told to enter Sync mode. If any number is negative, it will be
+converted to a postive number and that device will be told to turn off
+Sync.
+
+==== Examples
+
+* `/set-sync` 2 3 (put players 2 and 3 in Sync mode)
+* `/set-sync 1 -4 33` (put player 1 and the mixer in Sync mode, and
+  take player 4 out of Sync mode)
+
+=== Responses
+
+If there is a problem sending the message, an `/error` response will
+describe it. Otherwise, if you have a <<synced,`/synced` stream>>
+active, any sync state changes will be reported to that stream.
+
+
+[[synced]]
+== `/synced`
+
+Find out the sync states of Pro DJ Link devices on the network,
+either now or (by setting up a stream) as they change.
+
+include::partial$stream_arguments.adoc[]
+
+:stream-type: sync state
+:stream-command: /synced
+:stream-port: 4003
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/sync/``\{device}:: Sent for each device whose sync state is known
+(and, for streams, for each playing state change for that device). The
+value of _\{device}_ will be the device number (1 through 4 for CDJs,
+33 for mixers), and the message's argument is `0` if the device is
+unsynced, and `1` if it is in Sync mode.
+
+==== Examples
+
+* `/sync/4 0`
+* `/sync/33 1`
+
+NOTE: You can control players' sync state using the
+<<set-sync,`/set-sync` message>>.
 
 
 [[tempos]]

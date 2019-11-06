@@ -14,14 +14,10 @@ same port number (or lack of one) as you used when setting up the
 stream.
 
 ifndef::stream-omit-examples[]
-:stream-omit-examples: false
-endif::[]
-
-ifeval::[{stream-omit-examples} != true]
 include::partial$stream_examples.adoc[]
 endif::[]
 
 :!stream-type:
 :!stream-command:
 :!stream-port:
-:stream-omit-examples: false
+:!stream-omit-examples:

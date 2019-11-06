@@ -9,7 +9,7 @@
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
-                                      VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus])
+            VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus MixerStatus])
   (:gen-class))
 
 (defn- println-err
@@ -154,10 +154,17 @@
              (let [tempo  (float (.getEffectiveTempo status))]
                (when (server/update-device-state device :tempo tempo)
                  (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))
-           (when (instance? CdjStatus status)  ; Manage CDJ-only streams.
+           (when (instance? CdjStatus status)  ; Manage CDJ-only streams
              (let [playing (if (.isPlaying status) (int 1) (int 0))]
                (when (server/update-device-state device :playing playing)
-                 (server/publish-to-stream "/playing" (str "/playing/" device) playing))))))))
+                 (server/publish-to-stream "/playing" (str "/playing/" device) playing)))
+             (let [on-air (if (.isOnAir status) (int 1) (int 0))]
+               (when (server/update-device-state device :on-air on-air)
+                 (server/publish-to-stream "/on-air" (str "/on-air/" device) on-air))))
+           (when (or (instance? CdjStatus status) (instance? MixerStatus status))  ; Manage status-only streams.
+             (let [synced (if (.isSynced status) (int 1) (int 0))]
+               (when (server/update-device-state device :synced synced)
+                 (server/publish-to-stream "/synced" (str "/sync/" device) synced))))))))
 
     ;; Also start watching for beat packets.
     (.start beat-finder)
