@@ -4,6 +4,7 @@
 ** xref:Messages.adoc#beats[`/beats`]
 ** xref:Messages.adoc#devices[`/devices`]
 ** xref:Messages.adoc#fader-start[`/fader-start`]
+** xref:Messages.adoc#loaded[`/loaded`]
 ** xref:Messages.adoc#log[`/log`]
 ** xref:Messages.adoc#logging[`/logging`]
 ** xref:Messages.adoc#master[`/master`]

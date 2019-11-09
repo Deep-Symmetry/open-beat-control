@@ -502,6 +502,20 @@
       (catch Exception e
         (respond-with-error msg "Problem sending on-air command" (.getMessage e))))))
 
+(defn- announce-current-loaded-states
+  "Helper function that sends a set of loaded messages for all devices
+  whose loaded states are currently known."
+  [client]
+  (let [current @state]
+    (doseq [device (keys (:on-air current))]
+      (apply osc/osc-send client (str "/loaded/" device) (get-in current [:loaded device])))))
+
+(defn- loaded-handler
+  "Standard streaming handler for the /loaded path, which obtains
+  information about the track load state of devices on the network."
+  [msg]
+  (streamable-handler msg announce-current-loaded-states))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -521,7 +535,8 @@
   (osc/osc-handle @server "/set-sync" set-sync-handler)
   (osc/osc-handle @server "/on-air" on-air-handler)
   (osc/osc-handle @server "/set-on-air" set-on-air-handler)
-  (osc/osc-handle @server "/fader-start" fader-start-handler))
+  (osc/osc-handle @server "/fader-start" fader-start-handler)
+  (osc/osc-handle @server "/loaded" loaded-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

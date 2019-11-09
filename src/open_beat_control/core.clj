@@ -160,7 +160,10 @@
                  (server/publish-to-stream "/playing" (str "/playing/" device) playing)))
              (let [on-air (if (.isOnAir status) (int 1) (int 0))]
                (when (server/update-device-state device :on-air on-air)
-                 (server/publish-to-stream "/on-air" (str "/on-air/" device) on-air))))
+                 (server/publish-to-stream "/on-air" (str "/on-air/" device) on-air)))
+             (let [loaded (util/build-loaded-state status)]
+               (when (server/update-device-state device :loaded loaded)
+                 (apply server/publish-to-stream "/loaded" (str "/loaded/" device) loaded))))
            (when (or (instance? CdjStatus status) (instance? MixerStatus status))  ; Manage status-only streams.
              (let [synced (if (.isSynced status) (int 1) (int 0))]
                (when (server/update-device-state device :synced synced)

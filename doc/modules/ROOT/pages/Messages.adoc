@@ -119,6 +119,49 @@ name, and its IP address.
 * `/device/lost 33 DJM-2000 172.30.20.4`
 
 
+[[loaded]]
+== `/loaded`
+
+Find out about the tracks loaded by Pro DJ Link players on the
+network, either now or (by setting up a stream) as they change.
+
+include::partial$stream_arguments.adoc[]
+
+:stream-type: track load state
+:stream-command: /loaded
+:stream-port: 5432
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/loaded/``\{device}:: Sent for each device whose track load state is
+known (and, for streams, for each track load state change for that
+device). The value of _\{device}_ will be the device number (1 through
+4), and the message's argument is made up of four values:
+
+* The device number from which the track was loaded, or `0` if there
+  is no track loaded. This will be `1` through `4` for a normal
+  player, or `17` or `18` if the track was loaded from a rekordbox
+  laptop or mobile phone.
+* The slot from which the track was loaded, one of `none`, `cd`, `sd`,
+  `usb`, `collection` (from rekordbox), or `unknown`.
+* The type of the track, one of `none`, `cd`, `rekordbox`,
+  `unanalyzed` (digital audio file not indexed by rekordbox), or
+  `unknown`.
+* The ID of the track, which is either the rekordbox ID, or the track
+  number (for an audio CD), or the file ID (for an unanalyzed track).
+
+==== Examples
+
+* `/loaded/1 0 none none 0`
+* `/loaded/2 3 usb rekordbox 820`
+* `/loaded/3 17 collection rekordbox 1995`
+* `/loaded/4 4 cd cd 2`
+
+NOTE: You can cause players to load rekordbox tracks using the
+<<load,`/load` message>>.
+
+
 [[fader-start]]
 == `/fader-start`
 

@@ -2,7 +2,8 @@
   "Holds utility functions and values, with few dependencies, so they
   can be easily required by other namespaces."
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder
-            VirtualCdj MasterListener DeviceUpdateListener]))
+            VirtualCdj MasterListener DeviceUpdateListener
+            CdjStatus CdjStatus$TrackType CdjStatus$TrackSourceSlot]))
 
 (def device-finder
   "Holds the singleton instance of the Device Finder for convenience."
@@ -51,3 +52,37 @@
           (let [manifest   (java.util.jar.Manifest. stream)
                 attributes (.getMainAttributes manifest)]
             (.getValue attributes "Build-Timestamp")))))))
+
+(defmacro case-enum
+  "Like `case`, but explicitly dispatch on Java enum ordinals."
+  {:style/indent 1}
+  [e & clauses]
+  (letfn [(enum-ordinal [e] `(let [^Enum e# ~e] (.ordinal e#)))]
+    `(case ~(enum-ordinal e)
+       ~@(concat
+          (mapcat (fn [[test result]]
+                    [(eval (enum-ordinal test)) result])
+                  (partition 2 clauses))
+          (when (odd? (count clauses))
+            (list (last clauses)))))))
+
+(defn build-loaded-state
+  "Returns a tuple describing the track, if any, loaded in the CDJ that
+  sent a status packet."
+  [^CdjStatus status]
+  (let [source-player (.getTrackSourcePlayer status)
+        source-slot   (case-enum (.getTrackSourceSlot status)
+                        CdjStatus$TrackSourceSlot/NO_TRACK "none"
+                        CdjStatus$TrackSourceSlot/CD_SLOT "cd"
+                        CdjStatus$TrackSourceSlot/SD_SLOT "sd"
+                        CdjStatus$TrackSourceSlot/USB_SLOT "usb"
+                        CdjStatus$TrackSourceSlot/COLLECTION "collection"
+                        "unknown")
+        track-type    (case-enum (.getTrackType status)
+                        CdjStatus$TrackType/NO_TRACK "none"
+                        CdjStatus$TrackType/CD_DIGITAL_AUDIO "cd"
+                        CdjStatus$TrackType/REKORDBOX "rekordbox"
+                        CdjStatus$TrackType/UNANALYZED "unanalyzed"
+                        "unknown")
+        rekordbox (.getRekordboxId status)]
+    [source-player source-slot track-type rekordbox]))
