@@ -2,7 +2,8 @@
   "Manages the OSC server used to offer Beat Link services."
   (:require [overtone.osc :as osc]
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre])
+  (:import [org.deepsymmetry.beatlink CdjStatus$TrackType CdjStatus$TrackSourceSlot]))
 
 (defonce
   ^{:doc "The OSC server"}
@@ -516,6 +517,44 @@
   [msg]
   (streamable-handler msg announce-current-loaded-states))
 
+(defn- match-slot
+  "Returns the enum value corresponding to a slot name. Sends an error
+  response to the incoming `msg` and returns NO_TRACK if the name is
+  not recognized."
+  [slot msg]
+  (case slot
+    "cd" CdjStatus$TrackSourceSlot/CD_SLOT
+    "sd" CdjStatus$TrackSourceSlot/SD_SLOT
+    "usb" CdjStatus$TrackSourceSlot/USB_SLOT
+    "collection" CdjStatus$TrackSourceSlot/COLLECTION
+    (do
+      (respond-with-error msg "Urecognized slot name:" slot)
+      CdjStatus$TrackSourceSlot/NO_TRACK)))
+
+(defn- match-track-type
+  "Returns the Enum value corresponding to a track type name. Sends an
+  error response to the incoming `msg` and returns NO_TRACK if the
+  name is not recognized."
+  [track-type msg]
+  (case track-type
+    "cd" CdjStatus$TrackType/CD_DIGITAL_AUDIO
+    "rekordbox" CdjStatus$TrackType/REKORDBOX
+    "unanalyzed" CdjStatus$TrackType/UNANALYZED
+    (do
+      (respond-with-error msg "Urecognized track type name:" track-type)
+      CdjStatus$TrackType/NO_TRACK)))
+
+(defn- load-handler
+  "Sends a request to a player to have it load a track."
+  [{:keys [args] :as msg}]
+  (let [[target-player source-device slot track-type id] args
+        slot                                             (match-slot slot msg)
+        track-type                                       (match-track-type track-type msg)]
+    (try
+      (.sendLoadTrackCommand virtual-cdj (int target-player) (int id) (int source-device) slot track-type)
+      (catch Exception e
+        (respond-with-error msg "Problem sending load track command" (.getMessage e))))))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -536,7 +575,8 @@
   (osc/osc-handle @server "/on-air" on-air-handler)
   (osc/osc-handle @server "/set-on-air" set-on-air-handler)
   (osc/osc-handle @server "/fader-start" fader-start-handler)
-  (osc/osc-handle @server "/loaded" loaded-handler))
+  (osc/osc-handle @server "/loaded" loaded-handler)
+  (osc/osc-handle @server "/load" load-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

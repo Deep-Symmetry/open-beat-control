@@ -119,6 +119,51 @@ name, and its IP address.
 * `/device/lost 33 DJM-2000 172.30.20.4`
 
 
+[[load]]
+== `/load`
+
+Send a message telling a player to load a track.
+
+=== Arguments
+
+[cols="2m,1m,6",options="header",]
+|=======================================================================
+
+|Name |Type |Purpose
+|target-player |integer |The device number of the player you want to load a track on.
+
+|source-device |integer |The device number of the player, rekordbox laptop, rekordbox mobile device from which the track can be loaded.
+
+|slot |string |The slot from which the track should be loaded, one of `cd`, `sd`, `usb`, or `collection` (if a rekordbox laptop/mobile device).
+
+|track-type |string |The kind of track being loaded, one of `cd`, `rekordbox`, or `unanalyzed` (digital audio not indexed by rekordbox).
+
+|id |integer |The rekordbox (or other) id of the track to be loaded.
+
+|=======================================================================
+
+NOTE: Most players we have encountered are able to load tracks of type
+`rekordbox` using this mechanism, because it was designed to support a
+feature in the rekordbox application. I would not expect loading
+tracks from the `cd` slot or `unanalyzed` tracks to work.
+
+==== Examples
+
+* `/load 2 3 usb rekordbox 819` (ask player 2 to load a track from
+  player 3's USB slot, which holds a rekordbox export, and the desired
+  track has rekordbox ID 819)
+* `/load 3 17 collection rekordbox 2739` (ask player 3 to load a track
+  from rekordbox laptop #1's linked collection, and the desired track
+  has rekordbox ID 2739)
+
+=== Responses
+
+If there is a problem sending the message, an `/error` message on the
+configured (or default) response port will describe it. Otherwise, if
+you have a <<loaded,`/loaded` stream>> active, once the track loads it
+will be reported to that stream.
+
+
 [[loaded]]
 == `/loaded`
 
@@ -182,9 +227,10 @@ that player will be told to stop.
 
 === Responses
 
-If there is a problem sending the message, an `/error` response will
-describe it. Otherwise, if you have a <<playing,`/playing` stream>>
-active, any playing state changes will be reported to that stream.
+If there is a problem sending the message, an `/error` message on the
+configured (or default) response port will describe it. Otherwise, if
+you have a <<playing,`/playing` stream>> active, any playing state
+changes will be reported to that stream.
 
 
 [[log]]
@@ -477,10 +523,10 @@ those players will be set on-air.
 
 === Responses
 
-If there is a problem sending the message, an `/error` response will
-describe it. Otherwise, if you have an <<on-air,`/on-air` stream>>
-active, the on-air state changes of the players will be reported on
-that stream.
+If there is a problem sending the message, an `/error` message on the
+configured (or default) response port will describe it. Otherwise, if
+you have an <<on-air,`/on-air` stream>> active, the on-air state
+changes of the players will be reported on that stream.
 
 
 [[set-sync]]
@@ -504,9 +550,10 @@ Sync.
 
 === Responses
 
-If there is a problem sending the message, an `/error` response will
-describe it. Otherwise, if you have a <<synced,`/synced` stream>>
-active, any sync state changes will be reported to that stream.
+If there is a problem sending the message, an `/error` message on the
+configured (or default) response port will describe it. Otherwise, if
+you have a <<synced,`/synced` stream>> active, any sync state changes
+will be reported to that stream.
 
 
 [[synced]]
