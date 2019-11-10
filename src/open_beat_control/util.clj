@@ -66,6 +66,12 @@
           (when (odd? (count clauses))
             (list (last clauses)))))))
 
+(defn boolean-to-osc
+  "Translates a truthy value to an int 0 or 1 value which is convenient
+  as an OSC v1 argument as generally used by Max/MSP."
+  [val]
+  (if val (int 1) (int 0)))
+
 (defn build-loaded-state
   "Returns a tuple describing the track, if any, loaded in the CDJ that
   sent a status packet."

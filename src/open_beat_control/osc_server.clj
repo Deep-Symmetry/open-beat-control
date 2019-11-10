@@ -555,6 +555,20 @@
       (catch Exception e
         (respond-with-error msg "Problem sending load track command" (.getMessage e))))))
 
+(defn- announce-current-cued-states
+  "Helper function that sends a set of cued messages for all devices
+  whose cued states currently known."
+  [client]
+  (let [current @state]
+    (doseq [device (keys (:cued current))]
+      (osc/osc-send client (str "/cued/" device) (get-in current [:cued device])))))
+
+(defn- cued-handler
+  "Standard streaming handler for the /cued path, which obtains
+  information about the cued state of devices on the network."
+  [msg]
+  (streamable-handler msg announce-current-cued-states))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -576,7 +590,8 @@
   (osc/osc-handle @server "/set-on-air" set-on-air-handler)
   (osc/osc-handle @server "/fader-start" fader-start-handler)
   (osc/osc-handle @server "/loaded" loaded-handler)
-  (osc/osc-handle @server "/load" load-handler))
+  (osc/osc-handle @server "/load" load-handler)
+  (osc/osc-handle @server "/cued" cued-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

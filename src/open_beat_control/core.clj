@@ -155,15 +155,18 @@
                (when (server/update-device-state device :tempo tempo)
                  (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))
            (when (instance? CdjStatus status)  ; Manage CDJ-only streams
-             (let [playing (if (.isPlaying status) (int 1) (int 0))]
+             (let [playing (util/boolean-to-osc (.isPlaying status))]
                (when (server/update-device-state device :playing playing)
                  (server/publish-to-stream "/playing" (str "/playing/" device) playing)))
-             (let [on-air (if (.isOnAir status) (int 1) (int 0))]
+             (let [on-air (util/boolean-to-osc (.isOnAir status))]
                (when (server/update-device-state device :on-air on-air)
                  (server/publish-to-stream "/on-air" (str "/on-air/" device) on-air)))
              (let [loaded (util/build-loaded-state status)]
                (when (server/update-device-state device :loaded loaded)
-                 (apply server/publish-to-stream "/loaded" (str "/loaded/" device) loaded))))
+                 (apply server/publish-to-stream "/loaded" (str "/loaded/" device) loaded)))
+             (let [cued (util/boolean-to-osc (.isCued status))]
+               (when (server/update-device-state device :cued cued)
+                 (server/publish-to-stream "/cued" (str "/cued/" device) cued))))
            (when (or (instance? CdjStatus status) (instance? MixerStatus status))  ; Manage status-only streams.
              (let [synced (if (.isSynced status) (int 1) (int 0))]
                (when (server/update-device-state device :synced synced)

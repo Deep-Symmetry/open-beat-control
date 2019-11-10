@@ -2,6 +2,7 @@
 * xref:Communicating.adoc[Communicating]
 * xref:Messages.adoc[Messages]
 ** xref:Messages.adoc#beats[`/beats`]
+** xref:Messages.adoc#cued[`/cued`]
 ** xref:Messages.adoc#devices[`/devices`]
 ** xref:Messages.adoc#fader-start[`/fader-start`]
 ** xref:Messages.adoc#load[`/load`]

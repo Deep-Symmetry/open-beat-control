@@ -89,6 +89,35 @@ at 131.6 BPM. The natural track tempo at this point is 132 BPM, and it
 is playing at 99.7% normal speed.
 
 
+[[cued]]
+== `/cued`
+
+Find out the cued states of Pro DJ Link devices on the network, either
+now or (by setting up a stream) as they change. Players report they
+are cued when they are positioned at the currently active cue point.
+Only players that are cued can be told to start playing using the
+<<fader-start,`/fader-start` message>>.
+
+include::partial$stream_arguments.adoc[]
+
+:stream-type: cued state
+:stream-command: /cued
+:stream-port: 4210
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/cued/``\{device}:: Sent for each device whose cued state is known
+(and, for streams, for each cued state change for that device). The
+value of _\{device}_ will be the device number (1 through 4), and the
+message's argument is `0` if the device is not cued (not currently
+positioned at the active cue point), and `1` if it is cued (positioned
+at the current cue point).
+
+* `/cued/2 1`
+* `/cued/3 0`
+
+
 [[devices]]
 == `/devices`
 
@@ -213,6 +242,10 @@ NOTE: You can cause players to load rekordbox tracks using the
 Uses the Fader Start mechanism to tell some players to start or stop
 playing. (They will only start if they are paused at the current cue
 point.)
+
+TIP: You can determine which players positioned at their cue points
+using the <<cued,`/cued` stream>>. This will let you know if
+`/fader-start` will be able to start them playing.
 
 === Arguments
 
