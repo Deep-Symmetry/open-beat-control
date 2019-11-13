@@ -411,8 +411,17 @@ don't have any actual track to play).
 `/master/tempo`:: Sent whenever the tempo reported by the Tempo Master
 changes. Its single `float` argument is the new tempo.
 
+`/master/playing`:: Sent whenever the tempo master is determined to
+have started or stopped playing. Its single `int` argument will be `1`
+if it is playing, and `0` if it is not. (Although this is slightly
+redundant with the <<playing,`/playing` stream>>, it enables you to
+easily create patches that depend on the presence of an active master
+player, without having to separately track playing states and the
+device number of the tempo master.)
+
 `/master/player`:: Sent whenever a new player takes over as Tempo Master.
 Its single `int` argument is the number of the new Master player.
+
 
 `/master/none`:: Sent when the current Tempo Master resigns that role
 (perhaps by disappearing from the network) without another being
@@ -426,6 +435,7 @@ Here, Player 3 was the Tempo Master and just started playing the
 second beat of a bar, at 128.0 BPM, which was the natural track tempo
 at this point, so it is playing at 100% normal speed.
 * `/master/tempo 128.1` (tempo has changed to 128.1 BPM)
+* `/master/playing 1` (the Tempo Master has started playing a track)
 * `/master/player 2` (player 2 has just become the new Tempo Master)
 * `/master/none` (there is no longer a Tempo Master)
 

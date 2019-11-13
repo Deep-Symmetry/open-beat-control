@@ -371,7 +371,7 @@
   "Helper function that sends whatever is known about the tempo master
   state."
   [client]
-  (if-let [master (.getTempoMaster virtual-cdj)]
+  (if-let [master (when (.isRunning virtual-cdj) (.getTempoMaster virtual-cdj))]
     (do
       (osc/osc-send client "/master/player" (.getDeviceNumber master))
       (osc/osc-send client "/master/tempo" (float (.getMasterTempo virtual-cdj))))
