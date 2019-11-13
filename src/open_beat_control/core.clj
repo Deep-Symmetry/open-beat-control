@@ -250,4 +250,12 @@
      metadata-finder
      (reify TrackMetadataListener
        (metadataChanged [_ md-update]
-         (server/publish-metadata-messages md-update))))))
+         (server/publish-metadata-messages md-update))))
+
+    ;; Similarly register and relay track signature updates.
+    (.addSignatureListener
+     signature-finder
+     (reify SignatureListener
+       (signatureChanged [_ sig-update]
+         (server/publish-to-stream "/signatures" (str "/signature/" (.player sig-update))
+                                   (or (.signature sig-update) "none")))))))

@@ -1,7 +1,8 @@
 (ns open-beat-control.osc-server
   "Manages the OSC server used to offer Beat Link services."
   (:require [overtone.osc :as osc]
-            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder metadata-finder]]
+            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder
+                                                     metadata-finder signature-finder]]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink CdjStatus$TrackType CdjStatus$TrackSourceSlot]
            [org.deepsymmetry.beatlink.data DeckReference TrackMetadata SearchableItem]))
@@ -615,6 +616,19 @@
   [msg]
   (streamable-handler msg announce-current-metadata))
 
+(defn- announce-current-signatures
+  "Helper function that sends a set of signature messages for all
+  currently known track signatures."
+  [client]
+  (doseq [[device signature] (.getSignatures signature-finder)]
+    (osc/osc-send client (str "/signature/" device) signature)))
+
+(defn- signature-handler
+  "Standard streaming handler for the /signatures path, which obtains
+  information about the signatures of tracks loaded on the network."
+  [msg]
+  (streamable-handler msg announce-current-signatures))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -638,7 +652,8 @@
   (osc/osc-handle @server "/loaded" loaded-handler)
   (osc/osc-handle @server "/load" load-handler)
   (osc/osc-handle @server "/cued" cued-handler)
-  (osc/osc-handle @server "/metadata" metadata-handler))
+  (osc/osc-handle @server "/metadata" metadata-handler)
+  (osc/osc-handle @server "/signatures" signature-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

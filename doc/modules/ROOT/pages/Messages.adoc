@@ -681,6 +681,38 @@ you have a <<synced,`/synced` stream>> active, any sync state changes
 will be reported to that stream.
 
 
+[[signatures]]
+== `/signatures`
+
+Find out the signatures (a cryptographic hash of metadata and waveform
+information that allows a track to be reliably recognized) for tracks
+loaded in players on the network, either now or (by setting up a
+stream) as they change.
+
+include::partial$stream_arguments.adoc[]
+
+:stream-type: signature
+:stream-command: /signatures
+:stream-port: 4567
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/signature/``\{device}:: Sent for each device that has a track whose
+signature has been computed (and, for streams, for each signature
+change for that device). The value of _\{device}_ will be the device
+number (1 through 4 for CDJs), and the message's argument is `none` if
+a previously reported signature is no longer valid, and the actual
+signature string otherwise. `none` is only sent to streams; when
+listing current signatures, if one is not known, that device is simply
+not mentioned.
+
+==== Examples
+
+* `/signature/2 a9623176f9e61a4cb2d49ef6ddd401f50ffd4ecd`
+* `/signature/4 none`
+
+
 [[synced]]
 == `/synced`
 

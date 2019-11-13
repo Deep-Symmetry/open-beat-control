@@ -16,5 +16,6 @@
 ** xref:Messages.adoc#respond[`/respond`]
 ** xref:Messages.adoc#set-on-air[`/set-on-air`]
 ** xref:Messages.adoc#set-sync[`/set-sync`]
+** xref:Messages.adoc#signatures[`/signatures`]
 ** xref:Messages.adoc#synced[`/synced`]
 ** xref:Messages.adoc#tempos[`/tempos`]
