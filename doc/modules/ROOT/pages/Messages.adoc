@@ -440,6 +440,88 @@ at this point, so it is playing at 100% normal speed.
 * `/master/none` (there is no longer a Tempo Master)
 
 
+[[metadata]]
+== `/metadata`
+
+Find out the metadata for tracks loaded in players either now or (by
+setting up a stream) as it changes.
+
+include::partial$stream_arguments.adoc[]
+
+:stream-type: metadata item
+:stream-command: /metadata
+:stream-port: 4242
+include::partial$stream_commands.adoc[]
+
+=== Responses
+
+``/metadata/``\{device}``/``\{item}:: Sent for each device whose
+metadata known (and, for streams, for each on-air state change for
+that device). The value of _\{device}_ will be the device number (1
+through 4), _\{item}_ identifies a particular kind of metadata
+information (as described below), and the argument is the current
+value of that metadata item for that device. The special `none` item
+means that metadata information for the player is no longer available,
+so any displays of metadata items for that player should be removed.
+
+=== Metadata Item Types
+
+`none`:: As noted above, any metadata previously reported for the
+specified device is no longer valid. Either the player has
+disappeared, the media has been ejected, or a new track has been
+loaded (in which case, new metadata should be available momentarily).
+This item is sent to streams only; when listing current metadata,
+players for which nothing is known are simply not included in the
+response.
+
+`title`:: The title of the track, as a `string` argument.
+
+`artist`:: The artist that recorded the track, as a `string` argument.
+
+`album`:: The album title of the track, as a `string` argument.
+
+`color`:: The color assigned to the track in rekordbox, if any, as a
+`string` argument.
+
+`comment`:: The DJ comment assigned to the track in rekordbox, as a
+`string` argument.
+
+`duration`:: The total playing time of the track in seconds, as an
+`integer` argument.
+
+`genre`:: The musical genre of the track, as a `string` argument.
+
+`key`:: The musical key of the track, as a `string` argument.
+
+`label`:: The record label of the track, as a `string` argument.
+
+`original-artist`:: The artist that originally recorded the track, as
+a `string` argument.
+
+`rating`:: The star rating assigned the track in recordbox, as an
+`integer` argument.
+
+`remixer`:: The artist who remixed the track, as a `string` argument.
+
+`tempo`:: The starting tempo of the track, in beats per minute, as a
+`float` argument.
+
+
+==== Examples
+
+* `/metadata/2/title Running To The Sea feat. Susanne Sundfor (Seven Lions Remix)`
+* `/metadata/2/artist Royksopp`
+* `/metadata/2/tempo 138.`
+* `/metadata/2/rating 2`
+* `/metadata/2/label Dog Triumph`
+* `/metadata/2/key F#m`
+* `/metadata/2/genre Dubstep`
+* `/metadata/2/duration 343`
+* `/metadata/2/comment F#m, 11a, +9, Purchased at Beatport.com`
+* `/metadata/2/color No Color`
+* `/metadata/2/album Running To The Sea`
+
+
 [[on-air]]
 == `/on-air`
 

@@ -10,6 +10,7 @@
 ** xref:Messages.adoc#log[`/log`]
 ** xref:Messages.adoc#logging[`/logging`]
 ** xref:Messages.adoc#master[`/master`]
+** xref:Messages.adoc#metadata[`/metadata`]
 ** xref:Messages.adoc#on-air[`/on-air`]
 ** xref:Messages.adoc#playing[`/playing`]
 ** xref:Messages.adoc#respond[`/respond`]

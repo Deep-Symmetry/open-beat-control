@@ -1,9 +1,10 @@
 (ns open-beat-control.osc-server
   "Manages the OSC server used to offer Beat Link services."
   (:require [overtone.osc :as osc]
-            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
+            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder metadata-finder]]
             [taoensso.timbre :as timbre])
-  (:import [org.deepsymmetry.beatlink CdjStatus$TrackType CdjStatus$TrackSourceSlot]))
+  (:import [org.deepsymmetry.beatlink CdjStatus$TrackType CdjStatus$TrackSourceSlot]
+           [org.deepsymmetry.beatlink.data DeckReference TrackMetadata SearchableItem]))
 
 (defonce
   ^{:doc "The OSC server"}
@@ -111,6 +112,11 @@
            (-> current
                (update :playing dissoc device)
                (update :tempo dissoc device)))))
+
+(defn purge-master-state
+  "Gets rid of saved master state because it has disappeared."
+  []
+  (swap! state dissoc :master-playing :master-player))
 
 (defn update-device-state
   "Sets some element of interesting device state. Returns truthy if this
@@ -374,7 +380,9 @@
   (if-let [master (when (.isRunning virtual-cdj) (.getTempoMaster virtual-cdj))]
     (do
       (osc/osc-send client "/master/player" (.getDeviceNumber master))
-      (osc/osc-send client "/master/tempo" (float (.getMasterTempo virtual-cdj))))
+      (osc/osc-send client "/master/tempo" (float (.getMasterTempo virtual-cdj)))
+      (osc/osc-send client "/master/playing" (if (and (< (.getDeviceNumber master) 5) (.isPlaying master))
+                                               (int 1) (int 0))))
     (osc/osc-send client "/master/none")))
 
 (defn- master-handler
@@ -569,6 +577,44 @@
   [msg]
   (streamable-handler msg announce-current-cued-states))
 
+(defn- send-searchable-item
+  "Helper function that sends the label of a SearchableItem element of
+  track metadata, if it is present."
+  [client device suffix ^SearchableItem item]
+  (when item (osc/osc-send client (str "/metadata/" device suffix) (.label item))))
+
+(defn- send-metadata-messages
+  "Send OSC messages describing track metadata known for a player."
+  [client device ^TrackMetadata md]
+  (osc/osc-send client (str "/metadata/" device "/title") (.getTitle md))
+  (send-searchable-item client device "/artist" (.getArtist md))
+  (send-searchable-item client device "/album" (.getAlbum md))
+  #_(osc/osc-send client (str "/metadata/" device "/bit-rate") (.getBitRate md))
+  (osc/osc-send client (str "/metadata/" device "/color") (if-let [color (.getColor md)] (.colorName color) ""))
+  (osc/osc-send client (str "/metadata/" device "/comment") (.getComment md))
+  (osc/osc-send client (str "/metadata/" device "/duration") (.getDuration md))
+  (send-searchable-item client device "/genre" (.getGenre md))
+  (send-searchable-item client device "/key" (.getKey md))
+  (send-searchable-item client device "/label" (.getLabel md))
+  (send-searchable-item client device "/original-artist" (.getOriginalArtist md))
+  (osc/osc-send client (str "/metadata/" device "/rating") (.getRating md))
+  (send-searchable-item client device "/remixer" (.getRemixer md))
+  (osc/osc-send client (str "/metadata/" device "/tempo") (float (/ (.getTempo md) 100.0))))
+
+(defn- announce-current-metadata
+  "Helper function that sends a set of metadata messages for all
+  currently known metadata."
+  [client]
+  (doseq [[^DeckReference deck ^TrackMetadata md] (.getLoadedTracks metadata-finder)]
+    (when (zero? (.hotCue deck))
+      (send-metadata-messages client (.player deck) md))))
+
+(defn- metadata-handler
+  "Standard streaming handler for the /metadata path, which obtains
+  information about the metadata of tracks loaded on the network."
+  [msg]
+  (streamable-handler msg announce-current-metadata))
+
 (defn open-server
   "Starts our server listening on the specified port number, and
   registers all the message handlers for messages we support."
@@ -591,7 +637,8 @@
   (osc/osc-handle @server "/fader-start" fader-start-handler)
   (osc/osc-handle @server "/loaded" loaded-handler)
   (osc/osc-handle @server "/load" load-handler)
-  (osc/osc-handle @server "/cued" cued-handler))
+  (osc/osc-handle @server "/cued" cued-handler)
+  (osc/osc-handle @server "/metadata" metadata-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular
@@ -599,3 +646,12 @@
   [subscription-path send-path & args]
   (doseq [client (vals (get @active-streams subscription-path))]
     (apply osc/osc-send client send-path args)))
+
+(defn publish-metadata-messages
+  "Sends the  whole set  of relevant metadata  messages to  clients that
+  subscribed to them."
+  [^org.deepsymmetry.beatlink.data.TrackMetadataUpdate md-update]
+  (doseq [client (vals (get @active-streams "/metadata"))]
+    (if-let [md (.metadata md-update)]
+      (send-metadata-messages client (.player md-update) md)
+      (osc/osc-send client (str "/metadata/" (.player md-update) "/none")))))
