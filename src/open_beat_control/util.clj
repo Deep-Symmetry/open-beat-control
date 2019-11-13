@@ -3,7 +3,9 @@
   can be easily required by other namespaces."
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder
             VirtualCdj MasterListener DeviceUpdateListener
-            CdjStatus CdjStatus$TrackType CdjStatus$TrackSourceSlot]))
+            CdjStatus CdjStatus$TrackType CdjStatus$TrackSourceSlot]
+           [org.deepsymmetry.beatlink.data MetadataFinder TrackMetadataListener TrackMetadataUpdate CrateDigger
+            SignatureFinder SignatureListener SignatureUpdate TimeFinder]))
 
 (def device-finder
   "Holds the singleton instance of the Device Finder for convenience."
@@ -16,6 +18,23 @@
 (def beat-finder
   "Holds the singleton instance of the Beat Finder for convenience."
   (BeatFinder/getInstance))
+
+(def metadata-finder
+  "Holds the singleton instance of the Metadata Finder for convenience."
+  (MetadataFinder/getInstance))
+
+(def signature-finder
+  "Holds the singleton instance of the Signature Finder for convenience."
+  (SignatureFinder/getInstance))
+
+(def time-finder
+  "Holds the singleton instance of the Time Finder for convenience."
+  (TimeFinder/getInstance))
+
+(def crate-digger
+  "Holds the singleton instance of the Crate Digger bridge for
+  convenience."
+  (CrateDigger/getInstance))
 
 (def ^:private project-version
   (delay (clojure.edn/read-string (slurp (clojure.java.io/resource "open_beat_control/version.edn")))))

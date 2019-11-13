@@ -6,10 +6,13 @@
   (:require [clojure.tools.cli :as cli]
             [open-beat-control.logs :as logs]
             [open-beat-control.osc-server :as server]
-            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder]]
+            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder metadata-finder
+                                                     signature-finder time-finder crate-digger]]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
-            VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus MixerStatus])
+            VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus MixerStatus]
+           [org.deepsymmetry.beatlink.data MetadataFinder TrackMetadataListener TrackMetadataUpdate CrateDigger
+            SignatureFinder SignatureListener SignatureUpdate])
   (:gen-class))
 
 (defn- println-err
@@ -91,6 +94,16 @@
     (println-err msg))
   (System/exit status))
 
+(defn- start-other-finders
+  "Called when the Virtual CDJ has started successfully, to start up the
+  full complement of metadata-related finders that we use."
+  []
+  (timbre/info "Virtual CDJ running as Player" (.getDeviceNumber virtual-cdj))
+  (.start metadata-finder)
+  (.start crate-digger)
+  (.start signature-finder)
+  (.start time-finder))
+
 (defn -main
   "The entry point when invoked as a jar from the command line. Parse
   options, and start daemon operation."
@@ -131,9 +144,12 @@
                 (server/build-device-announcement-args announcement))
          (timbre/info "Pro DJ Link Device Found:" announcement)
          (future  ; We have seen a device, so we can start up the Virtual CDJ if it's not running.
-           (if (.start virtual-cdj)
-             (timbre/info "Virtual CDJ running as Player" (.getDeviceNumber virtual-cdj))
-             (timbre/warn "Virtual CDJ failed to start."))))
+           (try
+             (if (.start virtual-cdj)
+               (start-other-finders)
+               (timbre/warn "Virtual CDJ failed to start."))
+             (catch Throwable t
+               (timbre/error t "Problem trying to start Victual CDJ.")))))
        (deviceLost [_ announcement]
          (apply server/publish-to-stream "/devices" "/device/lost"
                 (server/build-device-announcement-args announcement))
