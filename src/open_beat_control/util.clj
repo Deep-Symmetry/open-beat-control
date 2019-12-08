@@ -36,6 +36,19 @@
   convenience."
   (CrateDigger/getInstance))
 
+(defn ensure-online
+  "Throws an exception if the virtual CDJ is not running."
+  []
+  (when-not (.isRunning virtual-cdj)
+    (throw (IllegalStateException. "Virtual CDJ must be online to perform this operation."))))
+
+(defn real-player?
+  "Checks whether the virtual CDJ is using a real player number. Can
+  only be called once it is online, so the answer is meaningful."
+  []
+  (ensure-online)
+  (<= 1 (.getDeviceNumber virtual-cdj) 4))
+
 (def ^:private project-version
   (delay (clojure.edn/read-string (slurp (clojure.java.io/resource "open_beat_control/version.edn")))))
 

@@ -127,10 +127,11 @@
 (defn- establish-bridge-mode
   "Once we have both a Carabiner connection and the VirtualCDJ is
   online, it is time to set the sync mode the user requested via
-  command line options. `ableton-master?` indicates whether the
-  Ableton Link session is supposed to be the tempo master."
+  command line options, if possible. `ableton-master?` indicates
+  whether the Ableton Link session is supposed to be the tempo
+  master."
   [ableton-master?]
-  (if ableton-master?
+  (if (and ableton-master? (.isSendingStatus virtual-cdj))
     (do
       (.becomeTempoMaster virtual-cdj)
       (when-let [current-tempo (:link-bpm (carabiner/state))]
@@ -202,6 +203,10 @@
              (when (not (.isRunning virtual-cdj))
                (if (.start virtual-cdj)
                  (do (start-other-finders)
+                     (.setPassive metadata-finder true)  ; Start out conservatively...
+                     (when (util/real-player?)  ; But no, we can use all the bells and whistles!
+                       (.setSendingStatus virtual-cdj true)
+                       (.setPassive metadata-finder false))
                      (when (and (:bridge options) (carabiner/active?) (not (carabiner/sync-enabled?)))
                        (establish-bridge-mode (:ableton-master options))))
                  (timbre/warn "Virtual CDJ failed to start.")))
