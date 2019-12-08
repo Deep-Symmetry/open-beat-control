@@ -19,15 +19,15 @@ keyboard, and mouse for the GUI) on something like a Raspberry Pi, and
 thus are unable to take advantage of the features of [Beat Link
 Trigger](https://github.com/Deep-Symmetry/beat-link-trigger#beat-link-trigger).
 
-To begin with, only a few features will be supported, but over time
-(and based on interest and requests) more will be added as practical
+To begin with, only a few features were supported, but over time (and
+based on interest and requests) more are being added when practical
 approaches can be identified. The
 [Carabiner](https://github.com/brunchboy/carabiner#carabiner)
-integration currently provided by
+integration previously provided by
 [beat-carabiner](https://github.com/Deep-Symmetry/beat-carabiner#beat-carabiner)
-is expected to be an early addition, and that project will turn into a
-library shared by both this project and Beat Link Trigger itself, to
-solve the problem of diverging features and stale code.
+was an early addition, and that project has become a library shared by
+both this project and Beat Link Trigger itself, to solve the problem
+of diverging features and stale code.
 
 ### Why OSC?
 
