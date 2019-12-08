@@ -83,10 +83,15 @@ server listens, and there will be more to come.
 
 ### Options
 
-    -o, --osc-port PORT  17002  Port number of OSC server
-    -r, --real-player           Try to pose as a real CDJ (device #1-4)
-    -L, --log-file PATH         Log to a rotated file instead of stdout
-    -h, --help                  Display help information and exit
+    -o, --osc-port PORT        17002  Port number for OSC server
+    -r, --real-player                 Try to pose as a real CDJ (device #1-4)
+    -B, --bridge                      Use Carabiner to bridge to Ableton Link
+    -a, --ableton-master              When bridging, Ableton Link tempo wins
+    -b, --beat-align                  When bridging, sync to beats only, not bars
+    -c, --carabiner-port PORT  17000  When bridging, port # of Carabiner daemon
+    -l, --latency MS           20     How many milliseconds are we behind the CDJs
+    -L, --log-file PATH               Log to a rotated file instead of stdout
+    -h, --help                        Display help information and exit
 
 For more information about these, please see the [User
 Guide](https://obc-guide.deepsymmetry.org/open-beat-control/readme#startup)

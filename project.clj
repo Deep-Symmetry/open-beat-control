@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "0.4.2"]
                  [org.deepsymmetry/beat-link "0.5.6-SNAPSHOT"]
+                 [beat-carabiner "0.2.1-SNAPSHOT"]
                  [overtone/osc-clj "0.9.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [com.fzakaria/slf4j-timbre "0.3.14"]]

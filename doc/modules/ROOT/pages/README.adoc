@@ -92,12 +92,25 @@ There are other command-line options you can use as well.
 === Options
 
 ----
--o, --osc-port PORT  17002  Port number of OSC server
--r, --real-player           Try to pose as a real CDJ (device #1-4)
--L, --log-file PATH         Log to a rotated file instead of stdout
--h, --help                  Display help information and exit
+-o, --osc-port PORT        17002  Port number for OSC server
+-r, --real-player                 Try to pose as a real CDJ (device #1-4)
+-B, --bridge                      Use Carabiner to bridge to Ableton Link
+-a, --ableton-master              When bridging, Ableton Link tempo wins
+-b, --beat-align                  When bridging, sync to beats only, not bars
+-c, --carabiner-port PORT  17000  When bridging, port # of Carabiner daemon
+-l, --latency MS           20     How many milliseconds are we behind the CDJs
+-L, --log-file PATH               Log to a rotated file instead of stdout
+-h, --help                        Display help information and exit
 ----
 
+By default, Open Beat Control listens for OSC messages on port 17002,
+so that is what you would configure your other software to talk to. If
+there is a reason you need to use a different port number instead
+(perhaps other software is already using port 17002), you can supply
+the `-o` or `--osc-port` option, along with a port number, to specify
+an alternate port for receiving OSC messages.
+
+[[pose-as-real-cdj]]
 ==== Posing as a real CDJ
 
 Unless you supply the `-r` or `--real-player` option, the Beat Link
@@ -112,6 +125,44 @@ control the tempo of the CDJs, then Beat Link needs to be using a real
 player number. Passing this option tells it to try; if you have four
 players on the network, you will have to turn one of them off before
 starting Open Beat Control for this to work.
+
+==== Bridging to Ableton Link
+
+If you would like to allow the DJ Link network to control the tempo
+and beat alignment of an Ableton Link session (or vice versa), you can
+supply the `-B` or `--bridge` option.
+
+NOTE: You will also need to be running
+https://github.com/brunchboy/carabiner#carabiner[Carabiner] on the
+same machine as Open Beat Control for this to work. If you have
+configured Open Beat Control to start automatically when your system
+boots, you will want to do the same thing for Carabiner.
+
+If Carabiner is not listening on its standard port number you can use
+the `-c` or `--carabiner-port` option to tell Open Beat Control where
+to find it.
+
+By default, Open Beat Control will align the Ableton Link session
+timeline with the DJ Link tempo grid at the level of entire musical
+bars, so the down beats fall at the same time. If you don't trust the
+down beat assignments of tracks on the CDJs, you can tell it to align
+at the level of individual beats instead, using the `-b` or
+`--beat-align` option.
+
+If the beat alignment seems to be slightly off, you can tweak it by
+adjusting the latency value using the `-l` or `--latency` option.
+
+The normal mode of operation is for Open Beat Control to tie the
+Ableton Link session to the player that is the Tempo Master on the DJ
+Link network. If you would like synchronization to happen in the other
+direction, so that the Pioneer players are synced to the Ableton Link
+session, you can use the `-a` or `--ableton-master` option, as long as
+Open Beat Control is <<#pose-as-real-cdj,posing as a real CDJ>>.
+
+As long as you turned on bridging at startup (and as long as you are
+using an appropriate player number if you want Ableton Link to be the
+tempo master) you can change which network (and which player) is
+controlling the tempo at any time using <<Messages#messages,OSC messages>>.
 
 == Learning More
 

@@ -8,6 +8,7 @@
             [open-beat-control.osc-server :as server]
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder metadata-finder
                                                      signature-finder time-finder crate-digger]]
+            [beat-carabiner.core :as carabiner]
             [taoensso.timbre :as timbre])
   (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
             VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus MixerStatus]
@@ -63,6 +64,17 @@
     :parse-fn #(Long/parseLong %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
    ["-r" "--real-player" "Try to pose as a real CDJ (device #1-4)"]
+   ["-B" "--bridge" "Use Carabiner to bridge to Ableton Link"]
+   ["-a" "--ableton-master" "When bridging, Ableton Link tempo wins"]
+   ["-b" "--beat-align" "When bridging, sync to beats only, not bars"]
+   ["-c" "--carabiner-port PORT" "When bridging, port # of Carabiner daemon"
+    :default 17000
+    :parse-fn #(Long/parseLong %)
+    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
+   ["-l" "--latency MS" "How many milliseconds are we behind the CDJs"
+    :default 20
+    :parse-fn #(Long/parseLong %)
+    :validate [#(<= 0 % 500) "Must be a number between 0 and 500 inclusive"]]
    ["-L" "--log-file PATH" "Log to a rotated file instead of stdout"
     :validate [valid-log-file? @log-file-error]]
    ["-h" "--help" "Display help information and exit"]])
@@ -78,13 +90,21 @@
     "Options:"
     options-summary
     ""
-    "Please see https://github.com/Deep-Symmetry/open-beat-control for more information."]))
+    "See https://github.com/Deep-Symmetry/open-beat-control for more information."]))
 
 (defn error-msg
   "Format an error message related to command-line invocation."
   [errors]
   (str "The following errors occurred while parsing your command:\n\n"
        (clojure.string/join \newline errors)))
+
+(defn- validate-combinations
+  "Check for mutual inconsistencies between supplied options, now that
+  all have been recorded."
+  [options]
+  (filter identity
+          [(when (and (:ableton-master options) (not (:real-player options)))
+             "Inconsistent options: ableton-master mode requires real-player mode.")]))
 
 (defn exit
   "Terminate execution with a message to the command-line user."
@@ -104,12 +124,43 @@
   (.start signature-finder)
   (.start time-finder))
 
+(defn- establish-bridge-mode
+  "Once we have both a Carabiner connection and the VirtualCDJ is
+  online, it is time to set the sync mode the user requested via
+  command line options. `ableton-master?` indicates whether the
+  Ableton Link session is supposed to be the tempo master."
+  [ableton-master?]
+  (if ableton-master?
+    (do
+      (.becomeTempoMaster virtual-cdj)
+      (when-let [current-tempo (:link-bpm (carabiner/state))]
+        (.setTempo virtual-cdj current-tempo))
+      (carabiner/set-sync-mode :full))
+    (do
+      (.setSynced virtual-cdj true)
+      (carabiner/set-sync-mode :passive))))
+
+(defn- connect-carabiner
+  "Called when we are supposed to bridge to an Ableton Link session and
+  so need a Carabiner daemon connection. `ableton-master?` indicates
+  whether the Ableton Link session is supposed to be the tempo master."
+  [ableton-master?]
+  (loop []
+    (let [{:keys [port latency]} (carabiner/state)]
+      (timbre/info "Trying to connect to Carabiner daemon on port" port "with latency" latency)
+      (when-not (carabiner/connect)
+        (timbre/warn "Not connected to Carabiner. Waiting ten seconds to try again.")
+        (Thread/sleep 10000)
+        (recur))))
+  (when (.isRunning virtual-cdj) (establish-bridge-mode ableton-master?)))
+
 (defn -main
   "The entry point when invoked as a jar from the command line. Parse
   options, and start daemon operation."
   [& args]
   (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
-    (let [errors (concat errors (map #(str "Unknown argument: " %) arguments))]
+    (let [errors (concat errors (map #(str "Unknown argument: " %) arguments)
+                         (validate-combinations options))]
 
       ;; Handle help and error conditions.
       (cond
@@ -145,9 +196,12 @@
          (timbre/info "Pro DJ Link Device Found:" announcement)
          (future  ; We have seen a device, so we can start up the Virtual CDJ if it's not running.
            (try
-             (if (.start virtual-cdj)
-               (start-other-finders)
-               (timbre/warn "Virtual CDJ failed to start."))
+             (when (not (.isRunning virtual-cdj))
+               (if (.start virtual-cdj)
+                 (do (start-other-finders)
+                     (when (and (:bridge options) (carabiner/active?) (not (carabiner/sync-enabled?)))
+                       (establish-bridge-mode (:ableton-master options))))
+                 (timbre/warn "Virtual CDJ failed to start.")))
              (catch Throwable t
                (timbre/error t "Problem trying to start Victual CDJ.")))))
        (deviceLost [_ announcement]
@@ -157,8 +211,7 @@
          (timbre/info "Pro DJ Link Device Lost:" announcement)
          (when (empty? (.getCurrentDevices device-finder))
            (timbre/info "Shutting down Virtual CDJ.")  ; We have lost the last device, so shut down for now.
-           (.stop virtual-cdj)
-           #_(carabiner/unlock-tempo)))))
+           (.stop virtual-cdj)))))
 
     ;; Be ready for status packets once the VirtualCdj is running.
     (.addUpdateListener
@@ -258,4 +311,12 @@
      (reify SignatureListener
        (signatureChanged [_ sig-update]
          (server/publish-to-stream "/signatures" (str "/signature/" (.player sig-update))
-                                   (or (.signature sig-update) "none")))))))
+                                   (or (.signature sig-update) "none")))))
+
+    ;; Configure Carabiner options
+    (carabiner/set-carabiner-port (:carabiner-port options))
+    (carabiner/set-latency (:latency options))
+    (carabiner/set-sync-bars (not (:beat-align options)))
+    (when (:bridge options)  ; We are supposed to bridge to Carabiner.
+      (carabiner/add-disconnection-listener (fn [_] (connect-carabiner (:ableton-master options))))
+      (connect-carabiner (:ableton-master options)))))
