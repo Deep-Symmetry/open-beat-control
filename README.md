@@ -42,7 +42,7 @@ project like this.
 Install a Java runtime, and the latest `open-beat-control.jar` from
 the
 [releases](https://github.com/Deep-Symmetry/open-beat-control/releases)
-page on your target hardware.
+page, on your target hardware.
 
 > :construction: There are no releases yet, but brave souls may
 > [download](https://deepsymmetry.org/media/open-beat-control.jar) a

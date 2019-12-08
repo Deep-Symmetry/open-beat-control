@@ -148,7 +148,10 @@
   (loop []
     (let [{:keys [port latency]} (carabiner/state)]
       (timbre/info "Trying to connect to Carabiner daemon on port" port "with latency" latency)
-      (when-not (carabiner/connect)
+      (when-not (try
+                  (carabiner/connect)
+                  (catch Throwable t
+                    (timbre/error t "Problem trying to connect to Carabiner.")))
         (timbre/warn "Not connected to Carabiner. Waiting ten seconds to try again.")
         (Thread/sleep 10000)
         (recur))))
