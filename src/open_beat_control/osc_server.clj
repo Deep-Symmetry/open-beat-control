@@ -155,12 +155,15 @@
   "Determines the port on which a stream subscription should be
   recorded. If none was requested, use the negation of the incoming
   message port. Otherwise, use the port specified. If one was
-  requested but not valid, return `nil`."
+  requested but not valid, return `nil`. For the convenience of people
+  sending OSC from Puredata, which only uses floating-point
+  numbers (ugh!) floating point values are accepted and truncated to
+  integers."
   [incoming port]
   (if (some? port)
-    (if (and (int? port) (< 0 port 65536))
-      port  ; A valid custom port, we will allocate a client for it.
-      (let [message (str "Illegal port value for " (:path incoming) ", must be in range 1-65535: " port)]
+    (if (and (number? port) (< 0 (int port) 65536))
+      (int port)  ; A valid custom port, we will allocate a client for it, after truncating to an integer.
+      (let [message (str "Illegal port value for " (:path incoming) ", must be a number in range 1-65535: " port)]
         (respond-with-error incoming message)))  ; Returns nil to indicate illegal port requested.
     (- (:src-port incoming))))  ; Negative means use default response client.
 
@@ -298,10 +301,10 @@
   [{:keys [src-host src-port args] :as msg}]
   (let [port (first args)]
     (if (some? port)  ; We were given a port value
-      (if (and (int? port)
-               (< 0 port 65536))
-        (swap! response-map update [src-host src-port] update-osc-client src-host port)
-        (timbre/error "Illegal port value for /respond, must be in range 1-65535, ignoring:" port))
+      (if (and (number? port)
+               (< 0 (int port) 65536))
+        (swap! response-map update [src-host src-port] update-osc-client src-host (int port))
+        (timbre/error "Illegal port value for /respond, must be a number in range 1-65535, ignoring:" port))
       (swap! response-map update [src-host src-port] update-osc-client src-host (inc src-port)))
 
     (timbre/info "Will respond to messages from host" src-host "and port" src-port "on port"
@@ -367,12 +370,12 @@
   "Helper function for requests to appoint a new player as Tempo
   Master."
   [msg player]
-  (if (integer? player)
+  (if (number? player)
     (try
-      (.appointTempoMaster virtual-cdj player)
+      (.appointTempoMaster virtual-cdj (int player))
       (catch IllegalArgumentException e
-        (respond-with-error msg (.getMessage e))))
-    (respond-with-error msg (str (:path msg) "appoint requires an integer player number."))))
+        (respond-with-error msg (str (:path msg) " exception :" (.getMessage e)))))
+    (respond-with-error msg (str (:path msg) " requires a player number, received" player))))
 
 (defn- announce-current-master
   "Helper function that sends whatever is known about the tempo master
@@ -457,16 +460,17 @@
 
 (defn gather-on-off-sets
   "Helper for collecting arguments of commands that turn on and off
-  features of sets of players. Each positive integer in the arguments
-  is collected in the `on` set, and negative integers' absolute values
-  are collected in the `off` set. Both sets are returned as a tuple."
+  features of sets of players. Each positive number in the arguments
+  is collected in the `on` set (truncated to an integer), and negative
+  numbers' absolute values are (after truncating to an integer)
+  collected in the `off` set. Both sets are returned as a tuple."
   [args]
   (reduce (fn [[on off] arg]
             (cond
-              (pos-int? arg)
+              (pos? arg)
               [(conj on (int arg)) off]
 
-              (neg-int? arg)
+              (neg? arg)
               [on (conj off (int (- arg)))]
 
               :else
@@ -484,7 +488,7 @@
     (try
       (.sendFaderStartCommand virtual-cdj start stop)
       (catch Exception e
-        (respond-with-error msg "Problem sending fader start command" (.getMessage e))))))
+        (respond-with-error msg "Problem sending fader start command:" (.getMessage e))))))
 
 (defn- set-sync-handler
   "Turns sync mode on or off for player numbers passed as
@@ -495,12 +499,12 @@
       (try
         (.sendSyncModeCommand virtual-cdj device true)
         (catch Exception e
-          (respond-with-error msg (str "Unable to turn on sync for device" device ":") (.getMessage e)))))
+          (respond-with-error msg (str "Unable to turn on sync for device " device ":") (.getMessage e)))))
     (doseq [device off]
       (try
         (.sendSyncModeCommand virtual-cdj device false)
         (catch Exception e
-          (respond-with-error msg (str "Unable to turn off sync for device" device ":") (.getMessage e)))))))
+          (respond-with-error msg (str "Unable to turn off sync for device " device ":") (.getMessage e)))))))
 
 (defn- set-on-air-handler
   "Turns the on-air state on or off for player numbers passed as
@@ -510,7 +514,7 @@
     (try
       (.sendOnAirCommand virtual-cdj on)
       (catch Exception e
-        (respond-with-error msg "Problem sending on-air command" (.getMessage e))))))
+        (respond-with-error msg "Problem sending on-air command:" (.getMessage e))))))
 
 (defn- announce-current-loaded-states
   "Helper function that sends a set of loaded messages for all devices
@@ -528,30 +532,35 @@
 
 (defn- match-slot
   "Returns the enum value corresponding to a slot name. Sends an error
-  response to the incoming `msg` and returns NO_TRACK if the name is
-  not recognized."
+  response to the incoming `msg` and returns `nil` if the name is not
+  recognized."
   [slot msg]
   (case slot
     "cd" CdjStatus$TrackSourceSlot/CD_SLOT
     "sd" CdjStatus$TrackSourceSlot/SD_SLOT
     "usb" CdjStatus$TrackSourceSlot/USB_SLOT
     "collection" CdjStatus$TrackSourceSlot/COLLECTION
-    (do
-      (respond-with-error msg "Urecognized slot name:" slot)
-      CdjStatus$TrackSourceSlot/NO_TRACK)))
+
+    (respond-with-error msg (str (:path msg) " received unrecognized slot name:") slot)))
 
 (defn- match-track-type
   "Returns the Enum value corresponding to a track type name. Sends an
-  error response to the incoming `msg` and returns NO_TRACK if the
-  name is not recognized."
+  error response to the incoming `msg` and returns `nil` if the name
+  is not recognized."
   [track-type msg]
   (case track-type
     "cd" CdjStatus$TrackType/CD_DIGITAL_AUDIO
     "rekordbox" CdjStatus$TrackType/REKORDBOX
     "unanalyzed" CdjStatus$TrackType/UNANALYZED
-    (do
-      (respond-with-error msg "Urecognized track type name:" track-type)
-      CdjStatus$TrackType/NO_TRACK)))
+
+    (respond-with-error msg (str (:path msg) " received urecognized track type name:") track-type)))
+
+(defn- valid-number?
+  "Helper function to ensure a received value was a number. In addition
+  to returning a truthy value for that test, will send an error
+  response describing the problem if it failed."
+  [msg value label]
+  (or (number? value) (respond-with-error msg (str (:path msg) " received non-numeric value for " label ":") value)))
 
 (defn- load-handler
   "Sends a request to a player to have it load a track."
@@ -559,10 +568,14 @@
   (let [[target-player source-device slot track-type id] args
         slot                                             (match-slot slot msg)
         track-type                                       (match-track-type track-type msg)]
-    (try
-      (.sendLoadTrackCommand virtual-cdj (int target-player) (int id) (int source-device) slot track-type)
-      (catch Exception e
-        (respond-with-error msg "Problem sending load track command" (.getMessage e))))))
+    (when (and slot track-type
+               (valid-number? msg target-player "target player")
+               (valid-number? msg source-device "source device")
+               (valid-number? msg id "track id"))
+      (try
+        (.sendLoadTrackCommand virtual-cdj (int target-player) (int id) (int source-device) slot track-type)
+        (catch Exception e
+          (respond-with-error msg "Problem sending load track command:" (.getMessage e)))))))
 
 (defn- announce-current-cued-states
   "Helper function that sends a set of cued messages for all devices
