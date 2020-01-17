@@ -44,9 +44,8 @@ the
 [releases](https://github.com/Deep-Symmetry/open-beat-control/releases)
 page, on your target hardware.
 
-> :construction: There are no releases yet, but brave souls may
-> [download](https://deepsymmetry.org/media/open-beat-control.jar) a
-> development build.
+> :construction: There are no finished releases yet, but brave souls
+> may a development build.
 
 ### Java Runtime
 
