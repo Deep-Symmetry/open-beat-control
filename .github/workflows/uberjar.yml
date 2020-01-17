@@ -1,0 +1,69 @@
+name: Create the executable überjar
+
+on:
+  push:
+    branches:
+      -master
+
+jobs:
+  build_uberjar:
+    name: Build cross-platform überjar
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - uses: Deep-Symmetry/github-version-action@v1
+      with:
+        tag-var-name: release_tag
+
+    - name: Determine überjar name from git version, and snapshot status
+      run: |
+        echo "::set-env name=uberjar_name::open-beat-control-$git_version.jar"
+        if [[ release_tag =~ .*-SNAPSHOT ]]
+        then
+          echo "::set-env name=release_snapshot::true"
+        else
+          echo "::set-env name=release_snapshot::false"
+        fi
+
+    - name: Cache Leiningen dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-lein-${{ hashFiles('**/project.clj') }}
+        restore-keys: |
+          ${{ runner.os }}-lein-
+
+    - name: Install dependencies, forcing updates of snapshots
+      run: lein -U deps
+
+    - name: Install antora
+      run: sudo npm i -g @antora/cli @antora/site-generator-default
+
+    - name: Build überjar
+      run: |
+        lein uberjar
+        mv target/open-beat-control.jar "./$uberjar_name"
+
+    - name: Upload überjar
+      if: success()
+      uses: brunchboy/cool-github-releases@initial-markdown-and-replace-assets
+      with:
+        mode: update
+        tag_name: ${{ env.release_tag }}
+        isPrerelease: true
+        replace_assets: ${{ env.release_snapshot }}
+        assets: ${{ env.uberjar_name }}
+        github_token: ${{ github.token }}
+        initial_mrkdwn: |
+          :construction: This is pre-release code for people who want to help test [what is going into the next release](https://github.com/Deep-Symmetry/open-beat-control/blob/master/CHANGELOG.md).
+
+          > Don’t download this if you aren’t comfortable testing code while it is under active development! Instead, look at the [latest release](https:///github.com/Deep-Symmetry/open-beat-control/releases/latest).
+
+          Please note that since it’s a snapshot release, the executable jar below (you may need to click to expand the Assets) will change frequently—whenever new code is pushed to the project—so you will want to _download the latest version every time you work with it_.
