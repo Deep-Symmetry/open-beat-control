@@ -7,3 +7,5 @@ This change log follows the conventions of
 ## [Unreleased][unreleased]
 
 Initial development ideas.
+
+[unreleased]: https://github.com/Deep-Symmetry/open-beat-control/compare/4b8707c725ee7395c6844a8eb56c91900387408a...HEAD
