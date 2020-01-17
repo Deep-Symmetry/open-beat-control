@@ -3,7 +3,7 @@ name: Create the executable überjar
 on:
   push:
     branches:
-      -master
+      - master
 
 jobs:
   build_uberjar:
