@@ -57,7 +57,7 @@ page, on your target hardware.
 
 ### Java Runtime
 
-You may be able to get by with Java 6, but a current release will
+The minimum Java version needed is 9, but a current release will
 perform better and have more recent security updates. We currently use
 [Amazon Corretto
 11](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
