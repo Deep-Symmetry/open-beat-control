@@ -51,7 +51,9 @@ the
 page, on your target hardware.
 
 > :construction: There are no finished releases yet, but brave souls
-> may a development build.
+> are encouraged to try the pre-release, and please share your
+> experiences on [Beat Link Trigger's Gitter
+> channel](https://gitter.im/brunchboy/beat-link-trigger).
 
 ### Java Runtime
 
