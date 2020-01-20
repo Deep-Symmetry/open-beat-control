@@ -5,8 +5,14 @@ Provides a subset of
 features over [Open Sound
 Control](https://en.wikipedia.org/wiki/Open_Sound_Control).
 
-> :construction: This project is at a very early stage of development
-> and is not yet ready for widespread use.
+> :construction: Although there hasn't yet been a formal release of
+> this project, it is ready for widespread use, and I am gathering
+> feedback (and hopefully a few example Puredata programs to share) in
+> preparation for the first release. Please dive in and help!
+>
+> :squirrel: This is already the recommended replacement for the
+> former standalone `beat-carabiner` daemon. That project is now
+> embedded in this one as a library.
 
 ## Background
 
