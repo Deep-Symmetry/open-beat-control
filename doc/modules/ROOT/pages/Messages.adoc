@@ -2,6 +2,7 @@
 James Elliott <james@deepsymmetry.org>
 :icons: font
 :experimental:
+:page-toclevels: 1
 :guide-top: README
 
 // Set up support for relative links on GitHub, and give it
