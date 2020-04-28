@@ -95,8 +95,8 @@ your standard system logs directory, something like:
 
     java -jar open-beat-control.jar -L /var/log/open-beat-control.log
 
-Other options allow you to specify the port number on which its OSC
-server listens, and there will be more to come.
+Other options allow you to adjust many aspects of its behavior, and
+there will likely be more to come.
 
 ### Options
 
@@ -205,7 +205,7 @@ releases with [Amazon Corretto
 <a href="http://deepsymmetry.org"><img align="right" alt="Deep Symmetry"
  src="doc/modules/ROOT/assets/images/DS-logo-bw-200-padded-left.png" width="216" height="123"></a>
 
-Copyright © 2019 [Deep Symmetry, LLC](https://deepsymmetry.org)
+Copyright © 2019–2020 [Deep Symmetry, LLC](https://deepsymmetry.org)
 
 Distributed under the Eclipse Public License either version 2.0 or (at
 your option) any later version. By using this software in any fashion,
