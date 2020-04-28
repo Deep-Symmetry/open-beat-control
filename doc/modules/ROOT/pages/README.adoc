@@ -64,10 +64,22 @@ java -jar open-beat-control.jar
 ----
 
 This will log any informational and error messages to the terminal
-window in which you are running it. If you are configuring your system
-startup scripts to run Open Beat Control, you probably also want to
-set up a log-file path, so that these messages are sent to a rotated
-log file in your standard system logs directory, along these lines:
+window in which you are running it.
+
+[NOTE]
+====
+You will see warnings about "illegal reflective access operations."
+This is normal and currently unavoidable, because several of the
+libraries used by Beat Link Trigger have not been updated to be
+compatible with the Java Module System introduced in Java 9. That may
+never happen; modules radically changed the rules, and the "future
+release" where these rules are enforced may never come.
+====
+
+If you are configuring your system startup scripts to run Open Beat
+Control, you probably also want to set up a log-file path, so that
+these messages are sent to a rotated log file in your standard system
+logs directory, along these lines:
 
 ----
 java -jar open-beat-control.jar -L /var/log/open-beat-control.log
@@ -94,6 +106,7 @@ There are other command-line options you can use as well.
 ----
 -o, --osc-port PORT        17002  Port number for OSC server
 -r, --real-player                 Try to pose as a real CDJ (device #1-4)
+-d, --device-number NUM           Use fixed device # (overrides -r)
 -B, --bridge                      Use Carabiner to bridge to Ableton Link
 -a, --ableton-master              When bridging, Ableton Link tempo wins
 -b, --beat-align                  When bridging, sync to beats only, not bars
@@ -110,6 +123,12 @@ there is a reason you need to use a different port number instead
 the `-o` or `--osc-port` option, along with a port number, to specify
 an alternate port for receiving OSC messages.
 
+The normal mode of operation is for Open Beat Control to look and see
+what devices are already on the network, and pick an unused device
+number to avoid conflicts. If you want to tell it to use a specific
+device number instead, see <<use-fixed-device,Specifying a Device
+Number>> below.
+
 [[pose-as-real-cdj]]
 ==== Posing as a real CDJ
 
@@ -125,6 +144,19 @@ control the tempo of the CDJs, then Beat Link needs to be using a real
 player number. Passing this option tells it to try; if you have four
 players on the network, you will have to turn one of them off before
 starting Open Beat Control for this to work.
+
+[[use-fixed-device]]
+==== Specifying a Device Number
+
+If you always want Open Beat Control to use a specific device number,
+you can configure that by supplying the `-d` or `--device-number`
+option along with the number that you would like to use, which must be
+in the range 1 through 127 (although you should probably stick to the
+range 1-15 to avoid conflicting with rekordbox and mixers). When you
+do this, passing `-r` or `--real-player` has no effect: you can choose
+to use a number in the real player range (1 through 4) or not. It is
+your responsibility to be sure that no other device on the network is
+trying to use the same number.
 
 ==== Bridging to Ableton Link
 
@@ -169,7 +201,9 @@ Ableton Link session to the player that is the Tempo Master on the DJ
 Link network. If you would like synchronization to happen in the other
 direction, so that the Pioneer players are synced to the Ableton Link
 session, you can use the `-a` or `--ableton-master` option, as long as
-Open Beat Control is <<#pose-as-real-cdj,posing as a real CDJ>>.
+Open Beat Control is <<pose-as-real-cdj,posing as a real CDJ>>, or if
+you <<use-fixed-device,specified a device number>> it was in the range
+1 through 4.
 
 As long as you turned on bridging at startup (and as long as you are
 using an appropriate player number if you want Ableton Link to be the

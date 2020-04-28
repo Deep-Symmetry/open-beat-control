@@ -15,7 +15,21 @@ Beat Control, is built automatically by netlify whenever changes are
 pushed to the relevant branches on GitHub. The netlify build command
 is:
 
-    npm i @antora/cli @antora/site-generator-default && \
-    $(npm bin)/antora --fetch doc/netlify.yml
+    npm i @antora/cli @antora/site-generator-lunr && \
+    DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr $(npm bin)/antora --fetch doc/netlify.yml \
+      --generator antora-site-generator-lunr
 
 And the publish directory is `doc/build/site`.
+
+To build it locally to test changes before you push them (or open a
+merge request), install Antora and the Lunr site generator globally,
+and run it with the local playbook:
+
+    npm install -g @antora/cli @antora/site-generator-lunr
+
+    DOCSEARCH_ENABLED=true DOCSEARCH_ENGINE=lunr antora --fetch doc/local.yml \
+      --generator antora-site-generator-lunr
+
+You only need to install the Antora components once, although you may
+want to update them from time to time. Once built, you can browse the
+local documentation by opening `doc/build/site/index.html`.

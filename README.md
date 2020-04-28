@@ -78,10 +78,20 @@ To start open-beat-control manually, run:
 
     java -jar open-beat-control.jar
 
-It will log to the terminal window in which you are running it. If you
-instead want to run it at system startup, you will probably also want
-to set a log-file path, so it logs to a rotated log file in your
-standard system logs directory, something like:
+It will log to the terminal window in which you are running it.
+
+> :wrench: You will see warnings about "illegal reflective access
+> operations." This is normal and currently unavoidable, because
+> several of the libraries used by Beat Link Trigger have not been
+> updated to be compatible with the Java Module System introduced in
+> Java 9. That may never happen; modules radically changed the rules,
+> and the "future release" where these rules are enforced may never
+> come.
+
+
+If you instead want to run it at system startup, you will probably
+also want to set a log-file path, so it logs to a rotated log file in
+your standard system logs directory, something like:
 
     java -jar open-beat-control.jar -L /var/log/open-beat-control.log
 
@@ -92,6 +102,7 @@ server listens, and there will be more to come.
 
     -o, --osc-port PORT        17002  Port number for OSC server
     -r, --real-player                 Try to pose as a real CDJ (device #1-4)
+    -d, --device-number NUM           Use fixed device # (overrides -r)
     -B, --bridge                      Use Carabiner to bridge to Ableton Link
     -a, --ableton-master              When bridging, Ableton Link tempo wins
     -b, --beat-align                  When bridging, sync to beats only, not bars

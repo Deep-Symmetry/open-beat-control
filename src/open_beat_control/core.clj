@@ -3,7 +3,9 @@
   command-line arguments, then establishes and interacts with
   connections to any Pioneer Pro DJ Link session that can be found,
   providing remote control via an OSC server."
-  (:require [clojure.tools.cli :as cli]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str]
+            [clojure.tools.cli :as cli]
             [open-beat-control.logs :as logs]
             [open-beat-control.osc-server :as server]
             [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder metadata-finder
@@ -27,19 +29,24 @@
   not acceptable."
   (atom nil))
 
+(def ^:private ^String system-newline
+  "Holds the appropriate string for moving the terminal to the start of
+  a new line on the current platform."
+  (System/getProperty "line.separator"))
+
 (defn- bad-log-arg
   "Records a validation failure message for the log file argument, so
   a more specific diagnosis can be given to the user. Returns false to
   make it easy to invoke from the validation function, to indicate
   that validation failed after recording the reason."
   [& messages]
-  (reset! log-file-error (clojure.string/join " " messages))
+  (reset! log-file-error (str/join " " messages))
   false)
 
 (defn- valid-log-file?
   "Check whether a string identifies a file that can be used for logging."
   [path]
-  (let [f (clojure.java.io/file path)
+  (let [f (io/file path)
         dir (or (.getParentFile f) (.. f (getAbsoluteFile) (getParentFile)))]
     (if (.exists f)
       (cond  ; The file exists, so make sure it is writable and a plain file
@@ -64,6 +71,9 @@
     :parse-fn #(Long/parseLong %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
    ["-r" "--real-player" "Try to pose as a real CDJ (device #1-4)"]
+   ["-d" "--device-number NUM" "Use fixed device # (overrides -r)"
+    :parse-fn #(Long/parseLong %)
+    :validate [#(<= 1 % 127) "Must be a number between 1 and 127"]]
    ["-B" "--bridge" "Use Carabiner to bridge to Ableton Link"]
    ["-a" "--ableton-master" "When bridging, Ableton Link tempo wins"]
    ["-b" "--beat-align" "When bridging, sync to beats only, not bars"]
@@ -82,29 +92,34 @@
 (defn usage
   "Print message explaining command-line invocation options."
   [options-summary]
-  (clojure.string/join
-   \newline
+  (str/join
+   system-newline
    [(str "open-beat-control, provides OSC access to a subset of beat-link.")
     (str "Usage: open-beat-control [options]")
     ""
     "Options:"
     options-summary
     ""
-    "See https://github.com/Deep-Symmetry/open-beat-control for more information."]))
+    "See https://github.com/Deep-Symmetry/open-beat-control for user guide."]))
 
 (defn error-msg
   "Format an error message related to command-line invocation."
   [errors]
-  (str "The following errors occurred while parsing your command:\n\n"
-       (clojure.string/join \newline errors)))
+  (str "The following errors occurred while parsing your command:"
+       system-newline system-newline
+       (str/join system-newline errors)))
 
 (defn- validate-combinations
   "Check for mutual inconsistencies between supplied options, now that
   all have been recorded."
   [options]
-  (filter identity
-          [(when (and (:ableton-master options) (not (:real-player options)))
-             "Inconsistent options: ableton-master mode requires real-player mode.")]))
+  (let [fixed (:device-number options)]
+    (filter identity
+            [(when (and (:ableton-master options)
+                        (if fixed
+                          (> fixed 4)
+                          (not (:real-player options))))
+               "Inconsistent options: ableton-master mode requires a real player number (1-4).")])))
 
 (defn exit
   "Terminate execution with a message to the command-line user."
@@ -178,10 +193,12 @@
     (server/open-server (:osc-port options))
     (timbre/info "Running OSC server on port" (:osc-port options))
 
-    ;; See if the user wants us to use a real player number.
-    (when (:real-player options)
-      (.setUseStandardPlayerNumber virtual-cdj true)
-      (timbre/info "Virtual CDJ will attempt to pose as a standard player, device #1 through #4"))
+    ;; See if the user wants us to use a specific player number.
+    (if-let [fixed (:device-number options)]
+      (timbre/info (str "Virtual CDJ will attempt to use device #" fixed))
+      (when (:real-player options)  ; Auto-assigning number; should we try to use the real player range?
+        (.setUseStandardPlayerNumber virtual-cdj true)
+        (timbre/info "Virtual CDJ will attempt to pose as a standard player, device #1 through #4")))
 
     ;; Set our device name.
     (.setDeviceName virtual-cdj "open-beat-control")
@@ -201,6 +218,7 @@
          (future  ; We have seen a device, so we can start up the Virtual CDJ if it's not running.
            (try
              (when (not (.isRunning virtual-cdj))
+               (when-let [fixed (:device-number options)] (.setDeviceNumber virtual-cdj (byte fixed)))
                (if (.start virtual-cdj)
                  (do (start-other-finders)
                      (.setPassive metadata-finder true)  ; Start out conservatively...
