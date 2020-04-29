@@ -3,5 +3,11 @@ title: Open Beat Control
 version: 'master'
 prerelease: true
 start_page: ROOT:README.adoc
+asciidoc:
+  attributes:
+    icons: font
+    experimental: ''
+    page-copyright: 2019–2020
+    page-pagination: ''
 nav:
 - modules/ROOT/nav.adoc

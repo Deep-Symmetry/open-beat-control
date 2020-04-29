@@ -1,9 +1,6 @@
 = Messages
 James Elliott <james@deepsymmetry.org>
-:icons: font
-:experimental:
 :page-toclevels: 1
-:guide-top: README
 
 // Set up support for relative links on GitHub, and give it
 // usable icons for admonitions, w00t! Add more conditions
@@ -813,15 +810,3 @@ that device.
 
 * `/tempo/33 127.190002`
 * `/tempo/2 127.190399`
-
-
-== Learning More
-
-****
-
-* Continue to <<{guide-top}#what-next,What Next?>>
-* Return to <<{guide-top}#open-beat-control-user-guide,Top>>
-
-****
-
-include::partial$Footer.adoc[]

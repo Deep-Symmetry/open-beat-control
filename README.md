@@ -139,10 +139,11 @@ donate to offset the hundreds of hours of research, development, and
 writing that have already been invested. Or perhaps to facilitate
 future efforts, tools, toys, and time to explore.
 
-<a href="https://liberapay.com/deep-symmetry/donate"><img align="center" alt="Donate using Liberapay"
+<a href="https://liberapay.com/deep-symmetry/donate"><img style="vertical-align:middle" alt="Donate using Liberapay"
     src="https://liberapay.com/assets/widgets/donate.svg"></a> using Liberapay, or
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J26G6ULJKV8RL"><img align="center"
-    alt="Donate" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"></a> using PayPal
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7EXPEX7CZN8Q"><img
+    style="vertical-align:middle" alt="Donate"
+    src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"></a> using PayPal
 
 ## Compatibility
 
@@ -202,7 +203,7 @@ releases with [Amazon Corretto
 
 ## Licenses
 
-<a href="http://deepsymmetry.org"><img align="right" alt="Deep Symmetry"
+<a href="http://deepsymmetry.org"><img style="float:right" alt="Deep Symmetry"
  src="doc/modules/ROOT/assets/images/DS-logo-bw-200-padded-left.png" width="216" height="123"></a>
 
 Copyright © 2019–2020 [Deep Symmetry, LLC](https://deepsymmetry.org)
@@ -226,7 +227,7 @@ Used for parsing rekordbox exports and media analysis files, licensed
 under the [MIT License](https://opensource.org/licenses/MIT).
 
 <a href="https://www.netlify.com">
-  <img align="right" src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"/>
+  <img style="float:right" src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"/>
 </a>
 
 #### [Antora](https://antora.org)

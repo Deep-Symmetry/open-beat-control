@@ -1,8 +1,5 @@
 = Communicating
 James Elliott <james@deepsymmetry.org>
-:icons: font
-:experimental:
-:guide-top: README
 
 // Set up support for relative links on GitHub, and give it
 // usable icons for admonitions, w00t! Add more conditions
@@ -80,14 +77,3 @@ it, you will need to send the message again. Also, if you are using
 more than one `udpsend` object to communicate with Open Beat Control,
 even from the same patch, each one will need to have its `/respond`
 address configured.
-
-== Learning More
-
-****
-
-* Continue to <<Messages#messages,Messages>>
-* Return to <<{guide-top}#open-beat-control-user-guide,Top>>
-
-****
-
-include::partial$Footer.adoc[]
