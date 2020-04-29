@@ -621,6 +621,50 @@ which incoming messages are being received.
 
 _None_
 
+[[set-carabiner]]
+== `/set-carabiner`
+
+Allows you to change the Carabiner settings which can be modified on
+the fly, which include `latency` and `beat-align`. These have no
+effect unless you configured Open Beat Control to use Carabiner to
+bridge to an Ableton Link session.
+
+[cols="1,2,4",options="header",]
+|=======================================================================
+
+|Name |Type |Purpose
+|`command` |`string` |Specifies the setting you want to change, one of `latency` or `beat-align`.
+|`value` |number or `string` |See below, the new value you want to establish for the setting.
+
+|=======================================================================
+
+If your `command` is `latency`, then `value` is a number specifying
+the number of milliseconds that Open Beat Control (and therefore the
+Ableton Link session) is running behind the CDJs.
+
+If your `command` is `beat-align` then `value` can be a `string` with
+the value `true` to cause Carabiner to sync at the level of beats
+rather than entire bars (any other string will cause it to sync at the
+level of four-beat measures). Or `value` can be a number, in which
+case a non-zero value will cause Carabiner to sync at the level of
+beats, and a zero value will cause it to sync at the level of
+four-beat bars.
+
+=== Examples
+
+* `/set-carabiner latency 20` (shifts the Ableton Link session to
+  reflect that beats are actually happening twenty milliseconds before
+  we received beat packets from the players)
+* `/set-carabiner beat-align true` (synchronizes Ableton Link at the level of individual beats)
+* `/set-carabiner beat-align false` (synchronizes Ableton Link at the level of four-beat bars)
+* `/set-carabiner beat-align 1` (synchronizes Ableton Link at the level of individual beats)
+* `/set-carabiner beat-align 0` (synchronizes Ableton Link at the level of four-beat measures)
+
+=== Responses
+
+_None_
+
+
 [[set-on-air]]
 == `/set-on-air`
 

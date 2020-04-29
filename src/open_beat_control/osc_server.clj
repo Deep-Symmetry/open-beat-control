@@ -1,9 +1,10 @@
 (ns open-beat-control.osc-server
   "Manages the OSC server used to offer Beat Link services."
-  (:require [overtone.osc :as osc]
-            [open-beat-control.util :as util :refer [device-finder virtual-cdj beat-finder
-                                                     metadata-finder signature-finder]]
-            [taoensso.timbre :as timbre])
+  (:require [clojure.string :as str]
+            [overtone.osc :as osc]
+            [open-beat-control.util :as util :refer [device-finder virtual-cdj metadata-finder signature-finder]]
+            [taoensso.timbre :as timbre]
+            [beat-carabiner.core :as carabiner])
   (:import [org.deepsymmetry.beatlink CdjStatus$TrackType CdjStatus$TrackSourceSlot]
            [org.deepsymmetry.beatlink.data DeckReference TrackMetadata SearchableItem]))
 
@@ -149,7 +150,7 @@
   incoming message, and also log it. Guaranteed to return `nil`."
   [incoming & args]
   (apply respond incoming "/error" args)
-  (timbre/error (clojure.string/join " " args)))
+  (timbre/error (str/join " " args)))
 
 (defn- parse-subscription-port
   "Determines the port on which a stream subscription should be
@@ -233,10 +234,11 @@
   handler is responsible for reporting.
 
   If `extra-command-handler` is supplied, it will be called with the
-  message arguments and the full message when an unrecognized command
-  is received. If it handles it successfully, it must return a truthy
-  value. If there is no extra command handler, or it returns falsey,
-  an error will be reported about the unrecognized command."
+  message arguments and the full message to get the first chance at
+  the command received. If it handles it successfully, it must return
+  a truthy value. If there is no extra command handler, or it returns
+  falsey, the normal set of commands will be checked, and an error
+  will be reported if none of them match."
   ([msg send-current-state]
    (streamable-handler msg send-current-state nil))
   ([{:keys [args] :as msg} send-current-state extra-command-handler]
@@ -490,6 +492,31 @@
       (catch Exception e
         (respond-with-error msg "Problem sending fader start command:" (.getMessage e))))))
 
+(defn- set-carabiner-handler
+  "Supports changing the Carabiner parameters which can be modified on
+  the fly, `latency` and `beat-align`."
+  [{:keys [args] :as msg}]
+  (let [[command arg] args]
+    (case command
+
+      "latency"
+      (try
+        (carabiner/set-latency (long arg))
+        (catch Exception e
+          (respond-with-error msg "Unable to set Carabiner latency:" (.getMessage e))))
+
+      "beat-align"
+      (try
+        (let [align (if (number? arg) (not (zero? arg)) (Boolean/valueOf arg))]
+          (carabiner/set-sync-bars align))
+        (catch Exception e
+          (respond-with-error msg "Unable to set Carabiner beat-align:" (.getMessage e))))
+
+      nil
+      (respond-with-error msg (str (:path msg) " requires a command."))
+
+      (respond-with-error msg (str "Unknown " (:path msg) " command") command))))
+
 (defn- set-sync-handler
   "Turns sync mode on or off for player numbers passed as
   arguments (positive to turn on, negative to turn off)."
@@ -666,7 +693,8 @@
   (osc/osc-handle @server "/load" load-handler)
   (osc/osc-handle @server "/cued" cued-handler)
   (osc/osc-handle @server "/metadata" metadata-handler)
-  (osc/osc-handle @server "/signatures" signature-handler))
+  (osc/osc-handle @server "/signatures" signature-handler)
+  (osc/osc-handle @server "/set-carabiner" set-carabiner-handler))
 
 (defn publish-to-stream
   "Sends an OSC message to all clients subscribed to a particular

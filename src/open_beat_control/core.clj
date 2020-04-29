@@ -12,10 +12,9 @@
                                                      signature-finder time-finder crate-digger]]
             [beat-carabiner.core :as carabiner]
             [taoensso.timbre :as timbre])
-  (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder BeatListener
-            VirtualCdj MasterListener DeviceUpdateListener Util CdjStatus MixerStatus]
-           [org.deepsymmetry.beatlink.data MetadataFinder TrackMetadataListener TrackMetadataUpdate CrateDigger
-            SignatureFinder SignatureListener SignatureUpdate])
+  (:import [org.deepsymmetry.beatlink DeviceAnnouncementListener BeatListener
+            MasterListener DeviceUpdateListener Util CdjStatus MixerStatus]
+           [org.deepsymmetry.beatlink.data TrackMetadataListener SignatureListener])
   (:gen-class))
 
 (defn- println-err
