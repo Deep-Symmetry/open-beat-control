@@ -203,7 +203,7 @@ releases with [Amazon Corretto
 
 ## Licenses
 
-<a href="http://deepsymmetry.org"><img style="float:right" alt="Deep Symmetry"
+<a href="http://deepsymmetry.org"><img align="right" alt="Deep Symmetry"
  src="doc/modules/ROOT/assets/images/DS-logo-bw-200-padded-left.png" width="216" height="123"></a>
 
 Copyright © 2019–2020 [Deep Symmetry, LLC](https://deepsymmetry.org)
@@ -227,7 +227,7 @@ Used for parsing rekordbox exports and media analysis files, licensed
 under the [MIT License](https://opensource.org/licenses/MIT).
 
 <a href="https://www.netlify.com">
-  <img style="float:right" src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"/>
+  <img align="right" src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"/>
 </a>
 
 #### [Antora](https://antora.org)
