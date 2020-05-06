@@ -138,6 +138,21 @@ to use a number in the real player range (1 through 4) or not. It is
 your responsibility to be sure that no other device on the network is
 trying to use the same number.
 
+WARNING: If you tell Open Beat Control to use a specific device
+number, and there is an actual device using that number on the
+network, that device will defend its use of the number, and Open Beat
+Control will repeatedly fail to go online until the other device is
+disconnected or turned off. Or, if the other device is an XDJ-XZ, it
+does not properly implement the conflict resolution protocol, and you
+will end up with two devices on the same number, which will not work
+in any useful way. So only use this option if you really need to, and
+are careful about what you are doing.
+
+If you've plugged Open Beat Control into a mixer ethernet port that is
+assigned to a particular channel, the mixer will tell Open Beat
+Control what channel to use, and this will override your attempt to
+specify a device number.
+
 ==== Bridging to Ableton Link
 
 If you would like to allow the DJ Link network to control the tempo
