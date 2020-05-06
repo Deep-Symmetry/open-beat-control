@@ -217,8 +217,7 @@
          (future  ; We have seen a device, so we can start up the Virtual CDJ if it's not running.
            (try
              (when (not (.isRunning virtual-cdj))
-               (when-let [fixed (:device-number options)] (.setDeviceNumber virtual-cdj (byte fixed)))
-               (if (.start virtual-cdj)
+               (if (.start virtual-cdj (byte (:device-number options 0)))
                  (do (start-other-finders)
                      (.setPassive metadata-finder true)  ; Start out conservatively...
                      (when (util/real-player?)  ; But no, we can use all the bells and whistles!
