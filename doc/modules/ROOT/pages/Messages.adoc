@@ -267,7 +267,7 @@ changes will be reported to that stream.
 [[log]]
 == `/log`
 
-As described in the <<Communicating#sending,Communicating>> section,
+As described in the <<Communicating.adoc#sending,Communicating>> section,
 the `/log` message tells Open Beat Control to output the message to
 the log file, or if no log file has been configured, to the console.
 
@@ -589,7 +589,7 @@ NOTE: You can control players' playing state using the
 [[respond]]
 == `/respond`
 
-As described in the <<Communicating#response-port,Communicating>>
+As described in the <<Communicating.adoc#response-port,Communicating>>
 section, the `/respond` message tells Open Beat Control the port
 number it should use to send OSC responses back to your own software.
 

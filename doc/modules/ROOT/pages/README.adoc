@@ -203,13 +203,14 @@ you <<use-fixed-device,specified a device number>> it was in the range
 As long as you turned on bridging at startup (and as long as you are
 using an appropriate player number if you want Ableton Link to be the
 tempo master) you can change which network (and which player) is
-controlling the tempo at any time using <<Messages#messages,OSC messages>>.
+controlling the tempo at any time using <<Messages.adoc#,OSC
+messages>>.
 
 == Learning More
 
 ****
 
-* Continue to <<Communicating#communicating,Communicating>>
+* Continue to <<Communicating.adoc#,Communicating>>
 
 ****
 
