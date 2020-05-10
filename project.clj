@@ -5,8 +5,8 @@
             :url  "http://www.eclipse.org/legal/epl-v20.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "1.0.194"]
-                 [org.deepsymmetry/beat-link "0.6.2-SNAPSHOT"]
-                 [beat-carabiner "0.2.1"]
+                 [org.deepsymmetry/beat-link "0.6.2"]
+                 [beat-carabiner "0.2.2"]
                  [overtone/osc-clj "0.9.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [com.fzakaria/slf4j-timbre "0.3.19"]]
@@ -27,7 +27,7 @@
              "Specification-Version" ~#(:version %)
              "Build-Timestamp"       ~(str (java.util.Date.))}
 
-  :plugins [[com.roomkey/lein-v "7.1.0"]]
+  :plugins [[com.roomkey/lein-v "7.2.0"]]
 
   :middleware [lein-v.plugin/middleware]
 
