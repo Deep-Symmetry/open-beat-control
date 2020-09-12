@@ -1,6 +1,7 @@
 (ns open-beat-control.logs
   "Sets up logging."
-  (:require [open-beat-control.osc-server :as server]
+  (:require [clojure.string :as str]
+            [open-beat-control.osc-server :as server]
             [taoensso.timbre.appenders.3rd-party.rotor :as rotor]
             [taoensso.timbre :as timbre]
             [open-beat-control.util :as util]))
@@ -41,16 +42,14 @@
   hostname and stack trace fonts."
   ([data] (output-fn nil data))
   ([{:keys [no-stacktrace?] :as opts} data]
-   (let [{:keys [level ?err_ vargs_ msg_ ?ns-str hostname_
-                 timestamp_ ?line]} data]
-     (str
-             @timestamp_       " "
-       (clojure.string/upper-case (name level))  " "
-       "[" (or ?ns-str "?") ":" (or ?line "?") "] - "
-       (force msg_)
-       (when-not no-stacktrace?
-         (when-let [err (force ?err_)]
-           (str "\n" (timbre/stacktrace err (assoc opts :stacktrace-fonts {})))))))))
+   (let [{:keys [level ?err_ msg_ ?ns-str timestamp_ ?line]} data]
+     (str @timestamp_ " "
+          (str/upper-case (name level))  " "
+          "[" (or ?ns-str "?") ":" (or ?line "?") "] - "
+          (force msg_)
+          (when-not no-stacktrace?
+            (when-let [err (force ?err_)]
+              (str "\n" (timbre/stacktrace err (assoc opts :stacktrace-fonts {})))))))))
 
 (defn- init-logging-internal
   "Performs the actual initialization of the logging environment,

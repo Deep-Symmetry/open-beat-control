@@ -6,7 +6,12 @@ This change log follows the conventions of
 
 ## [Unreleased][unreleased]
 
-Nothing so far.
+### Changed
+
+- Updated `beat-Link` and `beat-carabiner` libraries to incorporate
+  fixes and new features.
+- Added type hints for the Clojure compiler to avoid reflection and
+  improve runtime performance.
 
 ## [0.1.0] - 2020-09-12
 

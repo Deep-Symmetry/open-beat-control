@@ -1,37 +1,39 @@
 (ns open-beat-control.util
   "Holds utility functions and values, with few dependencies, so they
   can be easily required by other namespaces."
-  (:import [org.deepsymmetry.beatlink DeviceFinder DeviceAnnouncementListener BeatFinder
-            VirtualCdj MasterListener DeviceUpdateListener
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.string :as str])
+  (:import [org.deepsymmetry.beatlink DeviceFinder BeatFinder VirtualCdj
             CdjStatus CdjStatus$TrackType CdjStatus$TrackSourceSlot]
-           [org.deepsymmetry.beatlink.data MetadataFinder TrackMetadataListener TrackMetadataUpdate CrateDigger
-            SignatureFinder SignatureListener SignatureUpdate TimeFinder]))
+           [org.deepsymmetry.beatlink.data MetadataFinder CrateDigger
+            SignatureFinder TimeFinder]))
 
-(def device-finder
+(def ^DeviceFinder device-finder
   "Holds the singleton instance of the Device Finder for convenience."
   (DeviceFinder/getInstance))
 
-(def virtual-cdj
+(def ^VirtualCdj virtual-cdj
   "Holds the singleton instance of the Virtual CDJ for convenience."
   (VirtualCdj/getInstance))
 
-(def beat-finder
+(def ^BeatFinder beat-finder
   "Holds the singleton instance of the Beat Finder for convenience."
   (BeatFinder/getInstance))
 
-(def metadata-finder
+(def ^MetadataFinder metadata-finder
   "Holds the singleton instance of the Metadata Finder for convenience."
   (MetadataFinder/getInstance))
 
-(def signature-finder
+(def ^SignatureFinder signature-finder
   "Holds the singleton instance of the Signature Finder for convenience."
   (SignatureFinder/getInstance))
 
-(def time-finder
+(def ^TimeFinder time-finder
   "Holds the singleton instance of the Time Finder for convenience."
   (TimeFinder/getInstance))
 
-(def crate-digger
+(def ^CrateDigger crate-digger
   "Holds the singleton instance of the Crate Digger bridge for
   convenience."
   (CrateDigger/getInstance))
@@ -50,7 +52,7 @@
   (<= 1 (.getDeviceNumber virtual-cdj) 4))
 
 (def ^:private project-version
-  (delay (clojure.edn/read-string (slurp (clojure.java.io/resource "open_beat_control/version.edn")))))
+  (delay (edn/read-string (slurp (io/resource "open_beat_control/version.edn")))))
 
 (defn get-version
   "Returns the version information set up by lein-v."
@@ -77,7 +79,7 @@
   (let [a-class    (class get-version)
         class-name (str (.getSimpleName a-class) ".class")
         class-path (str (.getResource a-class class-name))]
-    (when (clojure.string/starts-with? class-path "jar")
+    (when (str/starts-with? class-path "jar")
       (let [manifest-path (str (subs class-path 0 (inc (clojure.string/last-index-of class-path "!")))
                                "/META-INF/MANIFEST.MF")]
         (with-open [stream (.openStream (java.net.URL. manifest-path))]

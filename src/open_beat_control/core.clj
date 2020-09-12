@@ -12,7 +12,7 @@
                                                      signature-finder time-finder crate-digger]]
             [beat-carabiner.core :as carabiner]
             [taoensso.timbre :as timbre])
-  (:import [org.deepsymmetry.beatlink DeviceAnnouncementListener BeatListener
+  (:import [org.deepsymmetry.beatlink DeviceAnnouncementListener BeatListener DeviceUpdate
             MasterListener DeviceUpdateListener Util CdjStatus MixerStatus]
            [org.deepsymmetry.beatlink.data TrackMetadataListener SignatureListener])
   (:gen-class))
@@ -249,16 +249,16 @@
                  (server/publish-to-stream "/tempos" (str "/tempo/" device) tempo))))
            (when (instance? CdjStatus status)  ; Manage CDJ-only streams
 
-             (let [playing (util/boolean-to-osc (.isPlaying status))]
+             (let [playing (util/boolean-to-osc (.isPlaying ^CdjStatus status))]
                (when (server/update-device-state device :playing playing)
                  (server/publish-to-stream "/playing" (str "/playing/" device) playing))
                ;; See if this is also a change to the playing state of the tempo master
-               (when-let [master-update (and (.isRunning virtual-cdj) (.getTempoMaster virtual-cdj))]
+               (when-let [^DeviceUpdate master-update (and (.isRunning virtual-cdj) (.getTempoMaster virtual-cdj))]
                  (when (and (= (.getDeviceNumber master-update) device)
                             (server/update-device-state :master :master-playing playing))
                    (server/publish-to-stream "/master" "/master/playing" playing))))
 
-             (let [on-air (util/boolean-to-osc (.isOnAir status))]
+             (let [on-air (util/boolean-to-osc (.isOnAir ^CdjStatus status))]
                (when (server/update-device-state device :on-air on-air)
                  (server/publish-to-stream "/on-air" (str "/on-air/" device) on-air)))
 
@@ -266,7 +266,7 @@
                (when (server/update-device-state device :loaded loaded)
                  (apply server/publish-to-stream "/loaded" (str "/loaded/" device) loaded)))
 
-             (let [cued (util/boolean-to-osc (.isCued status))]
+             (let [cued (util/boolean-to-osc (.isCued ^CdjStatus status))]
                (when (server/update-device-state device :cued cued)
                  (server/publish-to-stream "/cued" (str "/cued/" device) cued))))
 
@@ -292,7 +292,7 @@
              (when (server/update-device-state device :playing (int 1))
                (server/publish-to-stream "/playing" (str "/playing" device) (int 1)))
              ;; A beat from the tempo master might also be the first indication it is playing.
-             (when-let [master-update (and (.isRunning virtual-cdj) (.getTempoMaster virtual-cdj))]
+             (when-let [^DeviceUpdate master-update (and (.isRunning virtual-cdj) (.getTempoMaster virtual-cdj))]
                (when (and (= (.getDeviceNumber master-update) device)
                           (server/update-device-state :master :master-playing (int 1)))
                  (server/publish-to-stream "/master" "/master/playing" (int 1)))))))))
