@@ -11,6 +11,9 @@ Control](https://en.wikipedia.org/wiki/Open_Sound_Control).
 > standalone `beat-carabiner` daemon. That project is now embedded in
 > this one as a library.
 
+[![License](https://img.shields.io/github/license/Deep-Symmetry/open-beat-control)](#licenses)
+
+
 ## Background
 
 This project is intended for people who want to use the beat-link
