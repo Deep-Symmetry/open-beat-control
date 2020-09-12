@@ -6,6 +6,12 @@ This change log follows the conventions of
 
 ## [Unreleased][unreleased]
 
-Initial development ideas.
+Nothing so far.
 
-[unreleased]: https://github.com/Deep-Symmetry/open-beat-control/compare/4b8707c725ee7395c6844a8eb56c91900387408a...HEAD
+## [0.1.0] - 2020-09-12
+
+First set of features to receive feedback that people are successfully
+using.
+
+[unreleased]: https://github.com/Deep-Symmetry/open-beat-control/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Deep-Symmetry/open-beat-control/compare/4b8707c725ee7395c6844a8eb56c91900387408a...v0.1.0

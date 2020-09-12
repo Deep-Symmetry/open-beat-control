@@ -1,6 +1,6 @@
 (defproject open-beat-control :lein-v
   :description "Provides a subset of beat-link features over Open Sound Control."
-  :url "http://example.com/FIXME"
+  :url "https://github.com/Deep-Symmetry/open-beat-control"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v20.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]
