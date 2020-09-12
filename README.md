@@ -1,5 +1,7 @@
 # open-beat-control
 
+<img align="right" alt="Open Beat Control logo"
+ src="doc/modules/ROOT/assets/images/OBC-logo-padded-left.png" width="275" height="250">
 Provides a subset of
 [beat-link](https://github.com/Deep-Symmetry/beat-link#beat-link)
 features over [Open Sound
