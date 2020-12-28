@@ -1,7 +1,7 @@
 name: open-beat-control
 title: Open Beat Control
-version: 'master'
-prerelease: true
+version: '0.1.1'
+prerelease: false
 start_page: ROOT:README.adoc
 asciidoc:
   attributes:
