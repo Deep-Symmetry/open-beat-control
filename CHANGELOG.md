@@ -6,10 +6,14 @@ This change log follows the conventions of
 
 ## [Unreleased][unreleased]
 
+Nothing so far.
+
+## [0.1.1] - 2020-12-28
+
 ### Changed
 
 - Updated `beat-Link` and `beat-carabiner` libraries to incorporate
-  fixes and new features.
+  fixes and new features as well as Ableton Link 3.0.3.
 - Added type hints for the Clojure compiler to avoid reflection and
   improve runtime performance.
 
@@ -18,5 +22,6 @@ This change log follows the conventions of
 First set of features to receive feedback that people are successfully
 using.
 
-[unreleased]: https://github.com/Deep-Symmetry/open-beat-control/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/Deep-Symmetry/open-beat-control/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Deep-Symmetry/open-beat-control/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Deep-Symmetry/open-beat-control/compare/4b8707c725ee7395c6844a8eb56c91900387408a...v0.1.0

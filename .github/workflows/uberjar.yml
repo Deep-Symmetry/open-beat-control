@@ -33,12 +33,12 @@ jobs:
 
     - name: Determine überjar name from git version, and snapshot status
       run: |
-        echo "::set-env name=uberjar_name::open-beat-control-$git_version.jar"
+        echo "uberjar_name=open-beat-control-$git_version.jar" >> $GITHUB_ENV
         if [[ release_tag =~ .*-SNAPSHOT ]]
         then
-          echo "::set-env name=release_snapshot::true"
+          echo "release_snapshot=true" >> $GITHUB_ENV
         else
-          echo "::set-env name=release_snapshot::false"
+          echo "release_snapshot=false" >> $GITHUB_ENV
         fi
 
     - name: Cache Leiningen dependencies
