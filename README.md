@@ -204,9 +204,9 @@ releases with [Amazon Corretto
 ## Licenses
 
 <a href="http://deepsymmetry.org"><img align="right" alt="Deep Symmetry"
- src="doc/modules/ROOT/assets/images/DS-logo-bw-200-padded-left.png" width="216" height="123"></a>
+ src="doc/modules/ROOT/assets/images/DS-logo-github.png" width="250" height="150"></a>
 
-Copyright © 2019–2020 [Deep Symmetry, LLC](https://deepsymmetry.org)
+Copyright © 2019–2022 [Deep Symmetry, LLC](https://deepsymmetry.org)
 
 Distributed under the Eclipse Public License either version 2.0 or (at
 your option) any later version. By using this software in any fashion,

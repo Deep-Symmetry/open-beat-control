@@ -75,16 +75,15 @@ Open Beat Control is primarily maintained by [@brunchboy][brunchboy].
 
 ## License
 
-<a href="http://deepsymmetry.org"><img style="float:right" alt="Deep Symmetry"
- src="doc/modules/ROOT/assets/images/DS-logo-bw-200-padded-left.png" width="216" height="123"></a>
+<a href="http://deepsymmetry.org"><img align="right" alt="Deep Symmetry"
+ src="doc/modules/ROOT/assets/images/DS-logo-github.png" width="250" height="150"></a>
 
-Copyright © 2016&ndash;2019 [Deep Symmetry, LLC](http://deepsymmetry.org)
+Copyright © 2019&ndash;2022 [Deep Symmetry, LLC](http://deepsymmetry.org)
 
-Distributed under the
-[Eclipse Public License 1.0](http://opensource.org/licenses/eclipse-1.0.php).
-By using this software in any fashion, you are agreeing to be bound by
-the terms of this license. You must not remove this notice, or any
-other, from this software.
+Distributed under the Eclipse Public License either version 2.0 or (at
+your option) any later version. By using this software in any fashion,
+you are agreeing to be bound by the terms of this license. You must
+not remove this notice, or any other, from this software.
 
 
 [contributions-released]: https://help.github.com/articles/github-terms-of-service/#6-contributions-under-repository-license
