@@ -50,11 +50,6 @@ the
 [releases](https://github.com/Deep-Symmetry/open-beat-control/releases)
 page, on your target hardware.
 
-> :construction: There are no finished releases yet, but you are
-> encouraged to try the pre-release build (found on the releases
-> page), and please share your experiences on [Beat Link Trigger's
-> Gitter channel](https://gitter.im/brunchboy/beat-link-trigger).
-
 ### Java Runtime
 
 The minimum Java version needed is 9, but a current release will
