@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "description": "Used to build the documentation site, not the project itself.",
+  "dependencies": {},
+  "devDependencies": {
+    "@antora/cli": "3.0",
+    "@antora/site-generator": "3.0",
+    "@antora/lunr-extension": "^1.0.0-alpha.4"
+  },
+  "engines": {
+    "node": ">=16.13.1"
+  },
+  "scripts": {
+    "local-docs": "npx antora --fetch doc/local.yml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Deep-Symmetry/open-beat-control.git"
+  },
+  "keywords": [
+    "pioneer",
+    "dj-link",
+    "clojure",
+    "osc"
+  ],
+  "author": {
+    "name": "James Elliott",
+    "email": "james@deepsymmetry.org"
+  },
+  "license": "EPL-1.0",
+  "bugs": {
+    "url": "https://github.com/Deep-Symmetry/open-beat-control/issues"
+  },
+  "homepage": "https://github.com/Deep-Symmetry/open-beat-control#readme"
+}

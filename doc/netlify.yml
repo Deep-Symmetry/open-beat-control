@@ -5,9 +5,14 @@ site:
 content:
   sources:
   - url: https://github.com/Deep-Symmetry/open-beat-control.git
-    branches: [master, guide-*]
+    branches: [main, guide-*]
     start_path: doc
+antora:
+  extensions:
+  - require: '@antora/lunr-extension'
+    index_latest_only: true
 ui:
   bundle:
-    url: https://deepsymmetry.org/media/antora/ui-bundle.zip
+    url: https://deepsymmetry.org/media/antora/ui-bundle-3.zip
     snapshot: true
+  supplemental_files: ./../node_modules/@antora/lunr-extension/supplemental_ui

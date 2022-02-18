@@ -1,13 +1,14 @@
 name: open-beat-control
 title: Open Beat Control
-version: 'master'
+version: ~
+display_version: main
 prerelease: true
 start_page: ROOT:README.adoc
 asciidoc:
   attributes:
     icons: font
     experimental: ''
-    page-copyright: 2019–2020
+    page-copyright: 2019–2022
     page-pagination: ''
 nav:
 - modules/ROOT/nav.adoc

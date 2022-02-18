@@ -4,10 +4,15 @@ site:
   start_page: open-beat-control::README.adoc
 content:
   sources:
-  - url: ../open-beat-control
-    branches: [master, guide-*]
+  - url: ./..
+    branches: HEAD
     start_path: doc
+antora:
+  extensions:
+  - require: '@antora/lunr-extension'
+    index_latest_only: true
 ui:
   bundle:
-    url: https://deepsymmetry.org/media/antora/ui-bundle.zip
+    url: https://deepsymmetry.org/media/antora/ui-bundle-3.zip
     snapshot: true
+  supplemental_files: ./../node_modules/@antora/lunr-extension/supplemental_ui
