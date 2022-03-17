@@ -6,8 +6,8 @@ the OSC messages you can use to interact with it. This guide shows
 some ways you can use it, but as an open-ended environment, the
 possibilities are endless. If you have questions or other approaches
 you’d like to share, please post to the
-https://gitter.im/brunchboy/beat-link-trigger[Beat Link Trigger Gitter
-chat room].
+https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger[Beat
+Link Trigger chat room].
 
 To keep page sizes manageable, this guide is split into several pages.
 It is worth reading through this whole guide once if you are new to
@@ -226,8 +226,8 @@ on the left.)
 
 If you have any thoughts, questions, your own integration examples, or
 even crazy ideas, please share them in the
-https://gitter.im/brunchboy/beat-link-trigger[Beat Link Trigger Gitter
-chat]!
+https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger[Beat
+Link Trigger Zulip chat]!
 
 If you find what seems to be an actual problem with the software,
 please open an
