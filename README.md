@@ -2,6 +2,9 @@
 
 <img align="right" alt="Open Beat Control logo"
  src="doc/modules/ROOT/assets/images/OBC-logo-padded-left.png" width="275" height="250">
+
+[![project chat](https://img.shields.io/badge/chat-on%20zulip-brightgreen)](https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger)
+
 Provides a subset of
 [beat-link](https://github.com/Deep-Symmetry/beat-link#beat-link)
 features over [Open Sound
@@ -123,10 +126,11 @@ messages you can send and receive, please see the
 ### Community
 
 For the moment, discussion of Open Beat Control is taking place on
-[Beat Link Trigger's Gitter
-channel](https://gitter.im/brunchboy/beat-link-trigger). If enough
-people start using it and discussing issues that aren't interesting to
-Beat Link Trigger users, I will create a separate channel.
+[Beat Link Trigger's Zulip
+stream](https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger).
+If enough people start using it and discussing issues that aren't
+interesting to Beat Link Trigger users, I will create a separate
+stream.
 
 ## Funding
 
@@ -171,10 +175,10 @@ Open Beat Control seems to work great with CDJ-2000 Nexus gear, and
 works fairly well (with less information available) with older
 CDJ-2000s. It has also been reported to work with XDJ-1000 gear. If
 you can try it with anything else, *please* let us know what you learn
-in the [Beat Link Trigger Gitter chat
-room](https://gitter.im/brunchboy/beat-link-trigger), or if you have
-worked out actionable details about something that could be improved,
-[open an
+in the [Beat Link Trigger Zulip
+stream](https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger),
+or if you have worked out actionable details about something that
+could be improved, [open an
 Issue](https://github.com/Deep-Symmetry/open-beat-control/issues) or
 submit a pull request so we can all improve our understanding
 together.
