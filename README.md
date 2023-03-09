@@ -205,7 +205,7 @@ releases with [Amazon Corretto
 <a href="http://deepsymmetry.org"><img align="right" alt="Deep Symmetry"
  src="doc/modules/ROOT/assets/images/DS-logo-github.png" width="250" height="150"></a>
 
-Copyright © 2019–2022 [Deep Symmetry, LLC](https://deepsymmetry.org)
+Copyright © 2019–2023 [Deep Symmetry, LLC](https://deepsymmetry.org)
 
 Distributed under the Eclipse Public License either version 2.0 or (at
 your option) any later version. By using this software in any fashion,
@@ -225,14 +225,10 @@ Used for communicating with the NFSv2 servers on players, licensed
 Used for parsing rekordbox exports and media analysis files, licensed
 under the [MIT License](https://opensource.org/licenses/MIT).
 
-<a href="https://www.netlify.com">
-  <img align="right" src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg"/>
-</a>
-
 #### [Antora](https://antora.org)
 
 Used to build the [user guide](https://obc-guide.deepsymmetry.org/),
 for embedding inside the application, and hosting on
-[Netlify](https://www.netlify.com). Antora is licensed under the
-[Mozilla Public License Version
+[deepsymmetry.org](https://deepsymmetry.org). Antora is licensed under
+the [Mozilla Public License Version
 2.0](https://www.mozilla.org/en-US/MPL/2.0/) (MPL-2.0).
