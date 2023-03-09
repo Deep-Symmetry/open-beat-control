@@ -110,7 +110,7 @@ there will likely be more to come.
     -h, --help                        Display help information and exit
 
 For more information about these, please see the [User
-Guide](https://obc-guide.deepsymmetry.org/open-beat-control/readme#startup)
+Guide](https://obc-guide.deepsymmetry.org/open-beat-control/README#startup)
 
 ## User Guide
 
