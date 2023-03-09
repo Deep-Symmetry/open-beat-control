@@ -1,0 +1,4 @@
+DirectoryPath: "doc/build/site"
+IgnoreURLs:
+  - "//opensource.org/licenses/"
+  - "//liberapay.com/"
