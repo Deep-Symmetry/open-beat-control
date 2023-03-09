@@ -2,3 +2,4 @@ DirectoryPath: "doc/build/site"
 IgnoreURLs:
   - "//opensource.org/licenses/"
   - "//liberapay.com/"
+  - "//www.paypal.com/cgi-bin/webscr"
