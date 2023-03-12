@@ -46,6 +46,20 @@ requests with responses), but it is widely supported in the kind of
 experimental music environments that are most likely to benefit from a
 project like this.
 
+## Getting Help
+
+<a href="http://zulip.com"><img align="right" alt="Zulip logo"
+ src="doc/modules/ROOT/assets/images/zulip-icon-circle.svg"
+ width="128" height="128"></a>
+
+Deep Symmetry&rsquo;s projects are generously sponsored with hosting
+by <a href="https://zulip.com">Zulip</a>, an open-source modern team
+chat app designed to keep both live and asynchronous conversations
+organized. Thanks to them, you can <a
+href="https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger">chat
+with our community</a>, ask questions, get inspiration, and share your
+own ideas.
+
 ## Installation
 
 Install a Java runtime, and the latest `open-beat-control.jar` from
@@ -121,9 +135,9 @@ messages you can send and receive, please see the
 ### Community
 
 For the moment, discussion of Open Beat Control is taking place on
-[Beat Link Trigger's Zulip
+[Beat Link Trigger&rsquo;s Zulip
 stream](https://deep-symmetry.zulipchat.com/#narrow/stream/275322-beat-link-trigger).
-If enough people start using it and discussing issues that aren't
+If enough people start using it and discussing issues that aren&rsquo;t
 interesting to Beat Link Trigger users, I will create a separate
 stream.
 
