@@ -3,13 +3,13 @@
   :url "https://github.com/Deep-Symmetry/open-beat-control"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v20.html"}
-  :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.clojure/tools.cli "1.0.194"]
-                 [org.deepsymmetry/beat-link "0.6.3"]
-                 [beat-carabiner "0.2.3"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
+                 [org.clojure/tools.cli "1.0.219"]
+                 [org.deepsymmetry/beat-link "7.2.0-SNAPSHOT"]
+                 [beat-carabiner "1.0.0"]
                  [overtone/osc-clj "0.9.0"]
                  [com.taoensso/timbre "5.1.0"]
-                 [com.fzakaria/slf4j-timbre "0.3.20"]]
+                 [com.fzakaria/slf4j-timbre "0.3.21"]]
   :repositories {"sonatype-snapshots" "https://oss.sonatype.org/content/repositories/snapshots"}
 
   :profiles {:dev     {:repl-options {:init-ns open-beat-control.core
