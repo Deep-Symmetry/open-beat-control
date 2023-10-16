@@ -8,7 +8,8 @@ This change log follows the conventions of
 
 Updated to incorporate much newer versions of underlying libraries,
 including Beat Link, which adds support for six players when used with
-a DJM-V10.
+a DJM-V10, and high-precision tracking of playback position for the
+CDJ-3000, including movements and looping inside of individual beats.
 
 ## [0.1.1] - 2020-12-28
 
