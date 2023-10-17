@@ -79,7 +79,7 @@
    ["-c" "--carabiner-port PORT" "When bridging, port # of Carabiner daemon"
     :default 17000
     :parse-fn #(Long/parseLong %)
-    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
+    :validate [#(< 0 % 0x10000) "Must be a number between 1 and 65535"]]
    ["-l" "--latency MS" "How many milliseconds are we behind the CDJs"
     :default 20
     :parse-fn #(Long/parseLong %)
