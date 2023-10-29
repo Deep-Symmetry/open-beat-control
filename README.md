@@ -21,12 +21,22 @@ Control](https://en.wikipedia.org/wiki/Open_Sound_Control).
 
 This project is intended for people who want to use the beat-link
 library to integrate with Pioneer DJ equipment, but are running in a
-non-JVM environment (like [PureData](https://puredata.info) or
-[Max](https://cycling74.com/products/max/)), or who need to run a
+non-JVM environment (like [PureData](https://puredata.info),
+[Max](https://cycling74.com/products/max/)), or [TouchDesigner](https://derivative.ca),
+or who need to run a
 lightweight headless process (that is, with no attached monitor,
 keyboard, and mouse for the GUI) on something like a Raspberry Pi, and
 thus are unable to take advantage of the features of [Beat Link
 Trigger](https://github.com/Deep-Symmetry/beat-link-trigger#beat-link-trigger).
+
+> Note that if you have a Raspberry Pi 4 or newer, there are plenty of resources
+> to run a GUI environment in a headless VNC server, and thus have the full
+> power of Beat Link Trigger available. This is a much better solution today.
+> 
+> Or, if you want to build your own integration using a richer API and can
+> write Java code, you should start by forking
+> [java-beat-control-example](https://github.com/Deep-Symmetry/java-beat-control-example)
+> which will allow you to get much further. 
 
 To begin with, only a few features were supported, but over time (and
 based on interest and requests) more are being added when practical
