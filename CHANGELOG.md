@@ -6,10 +6,16 @@ This change log follows the conventions of
 
 ## [Unreleased][unreleased]
 
-Updated to incorporate much newer versions of underlying libraries,
-including Beat Link, which adds support for six players when used with
-a DJM-V10, and high-precision tracking of playback position for the
-CDJ-3000, including movements and looping inside of individual beats.
+### Changed
+
+- Allow negative latencies thanks to user reports of beat packets
+  arriving before beats are heard.
+
+- Updated to incorporate much newer versions of underlying libraries,
+  including Beat Link, which adds support for six players when used
+  with a DJM-V10, and high-precision tracking of playback position for
+  the CDJ-3000, including movements and looping inside of individual
+  beats.
 
 ## [0.1.1] - 2020-12-28
 
@@ -17,6 +23,7 @@ CDJ-3000, including movements and looping inside of individual beats.
 
 - Updated `beat-Link` and `beat-carabiner` libraries to incorporate
   fixes and new features as well as Ableton Link 3.0.3.
+
 - Added type hints for the Clojure compiler to avoid reflection and
   improve runtime performance.
 

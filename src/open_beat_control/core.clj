@@ -83,7 +83,7 @@
    ["-l" "--latency MS" "How many milliseconds are we behind the CDJs"
     :default 20
     :parse-fn #(Long/parseLong %)
-    :validate [#(<= 0 % 500) "Must be a number between 0 and 500 inclusive"]]
+    :validate [#(<= -1000 % 1000) "Must be a number between -1000 and 1000"]]
    ["-L" "--log-file PATH" "Log to a rotated file instead of stdout"
     :validate [valid-log-file? @log-file-error]]
    ["-h" "--help" "Display help information and exit"]])
