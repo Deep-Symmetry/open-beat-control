@@ -22,7 +22,7 @@ Control](https://en.wikipedia.org/wiki/Open_Sound_Control).
 This project is intended for people who want to use the beat-link
 library to integrate with Pioneer DJ equipment, but are running in a
 non-JVM environment (like [PureData](https://puredata.info),
-[Max](https://cycling74.com/products/max/)), or [TouchDesigner](https://derivative.ca),
+[Max](https://cycling74.com/products/max/), or [TouchDesigner](https://derivative.ca)),
 or who need to run a
 lightweight headless process (that is, with no attached monitor,
 keyboard, and mouse for the GUI) on something like a Raspberry Pi, and
