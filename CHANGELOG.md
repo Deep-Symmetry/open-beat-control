@@ -10,12 +10,13 @@ This change log follows the conventions of
 
 - Allow negative latencies thanks to user reports of beat packets
   arriving before beats are heard.
-
 - Updated to incorporate much newer versions of underlying libraries,
   including Beat Link, which adds support for six players when used
   with a DJM-V10, and high-precision tracking of playback position for
   the CDJ-3000, including movements and looping inside of individual
-  beats.
+  beats. Also adds tentative support for working with Opus Quad
+  hardware with the help of metadata exports. Updated lib-carabiner
+  incorporates Ableton Link version 3.1.2.
 
 ## [0.1.1] - 2020-12-28
 
